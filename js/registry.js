@@ -1,4 +1,5 @@
 import buttonHover from '../tools/button-hover.js';
+import linkUnderline from '../tools/link-underline.js';
 
 export const categories = [
   { id: 'effects', title: 'Эффекты' },
@@ -6,4 +7,4 @@ export const categories = [
   { id: 'tweaks', title: 'Твики' },
 ];
 
-export const tools = [buttonHover];
+export const tools = [buttonHover, linkUnderline];
