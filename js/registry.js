@@ -12,6 +12,7 @@ import imageHover from '../tools/image-hover.js';
 import tabsStyle from '../tools/tabs-style.js';
 import sectionSpacing from '../tools/section-spacing.js';
 import counters from '../tools/counters.js';
+import customCursor from '../tools/custom-cursor.js';
 
 export const categories = [
   { id: 'effects', title: 'Эффекты' },
@@ -19,4 +20,4 @@ export const categories = [
   { id: 'tweaks', title: 'Твики' },
 ];
 
-export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader, marquee, preloader, slider, burgerMenu, imageHover, tabsStyle, sectionSpacing, counters];
+export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader, marquee, preloader, slider, burgerMenu, imageHover, tabsStyle, sectionSpacing, counters, customCursor];
