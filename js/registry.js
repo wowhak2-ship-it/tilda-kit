@@ -8,6 +8,7 @@ import marquee from '../tools/marquee.js';
 import preloader from '../tools/preloader.js';
 import slider from '../tools/slider.js';
 import burgerMenu from '../tools/burger-menu.js';
+import imageHover from '../tools/image-hover.js';
 
 export const categories = [
   { id: 'effects', title: 'Эффекты' },
@@ -15,4 +16,4 @@ export const categories = [
   { id: 'tweaks', title: 'Твики' },
 ];
 
-export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader, marquee, preloader, slider, burgerMenu];
+export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader, marquee, preloader, slider, burgerMenu, imageHover];
