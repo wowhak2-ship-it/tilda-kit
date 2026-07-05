@@ -4,6 +4,7 @@ import smoothScroll from '../tools/smooth-scroll.js';
 import scrollReveal from '../tools/scroll-reveal.js';
 import formStyle from '../tools/form-style.js';
 import stickyHeader from '../tools/sticky-header.js';
+import marquee from '../tools/marquee.js';
 
 export const categories = [
   { id: 'effects', title: 'Эффекты' },
@@ -11,4 +12,4 @@ export const categories = [
   { id: 'tweaks', title: 'Твики' },
 ];
 
-export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader];
+export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader, marquee];
