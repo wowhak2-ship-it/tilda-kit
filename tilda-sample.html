@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Tilda Kit — полигон (имитация страницы Tilda)</title>
+<!-- Base page look: rough imitation of a published Tilda page. -->
+<style>
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #1a1a1a; background: #fff; }
+  .t-section { padding: 90px 40px; max-width: 1160px; margin: 0 auto; }
+  .t-title { font-size: 42px; margin: 0 0 24px; }
+  .t-text, .t-descr { font-size: 18px; line-height: 1.7; color: #333; }
+  .t-btn { display: inline-block; padding: 16px 44px; background: #1a1a1a; color: #fff; text-decoration: none; font-size: 16px; }
+  .t-input { width: 100%; max-width: 420px; display: block; margin-bottom: 14px; font-size: 16px; }
+  .reveal-card { height: 160px; background: #e9e9e6; border-radius: 12px; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+</style>
+
+<!-- ======== Tilda Kit snippets (paste into Tilda HEAD) ======== -->
+
+<!-- Tilda Kit — Эффекты кнопок — 2026-07-05 -->
+<style>
+.t-btn, .t-submit, .t142__submit {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  transition: all 300ms ease;
+}
+.t-btn, .t-submit, .t142__submit { z-index: 1; }
+.t-btn::before, .t-submit::before, .t142__submit::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #1a1a1a;
+  transform: translateX(-101%);
+  transition: transform 300ms ease;
+  z-index: -1;
+}
+.t-btn:hover::before, .t-submit:hover::before, .t142__submit:hover::before { transform: translateX(0); }
+.t-btn:hover, .t-submit:hover, .t142__submit:hover { color: #ffffff !important; }
+</style>
+
+<!-- Tilda Kit — Подчёркивания ссылок — 2026-07-05 -->
+<style>
+.t-text a, .t-descr a {
+  text-decoration: none;
+  padding-bottom: 2px;
+  background-image: linear-gradient(#1a1a1a, #1a1a1a);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 2px;
+  transition: background-size 300ms ease;
+}
+.t-text a:hover, .t-descr a:hover {
+  background-size: 100% 2px;
+}
+</style>
+
+<!-- Tilda Kit — Плавный скролл — 2026-07-05 -->
+<script>
+(function () {
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  ready(function () {
+document.addEventListener('click', function (e) {
+      var link = e.target.closest('a[href^="#"]');
+      if (!link || link.getAttribute('href').length < 2) return;
+      var hash = link.getAttribute('href').slice(1);
+      var target = document.getElementById(hash) || document.querySelector('a[name="' + hash + '"]');
+      if (!target) return;
+      e.preventDefault();
+      var startY = window.pageYOffset;
+      var targetY = target.getBoundingClientRect().top + startY - 0;
+      var start = null;
+      function ease(t) { return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t; }
+      function step(ts) {
+        if (start === null) start = ts;
+        var t = Math.min(1, (ts - start) / 800);
+        window.scrollTo(0, startY + (targetY - startY) * ease(t));
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  });
+})();
+</script>
+
+<!-- Tilda Kit — Стилизация форм — 2026-07-05 -->
+<style>
+.t-input {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+  border: 1px solid #d0d0d0 !important;
+  border-radius: 8px !important;
+  height: 50px !important;
+  padding: 0 16px !important;
+  box-shadow: none !important;
+  transition: border-color 200ms ease;
+}
+.t-input:focus {
+  border-color: #1a1a1a !important;
+  outline: none !important;
+}
+.t-input::placeholder {
+  color: #1a1a1a99;
+}
+textarea.t-input {
+  height: auto !important;
+  min-height: 100px;
+  padding: 12px 16px !important;
+}
+</style>
+
+<!-- Tilda Kit — Липкое меню при скролле — 2026-07-05 -->
+<style>
+.t228, .t446, .t451, .t456, .t466, .t478 {
+  transition: all 300ms ease;
+}
+.t228.tk-scrolled, .t446.tk-scrolled, .t451.tk-scrolled, .t456.tk-scrolled, .t466.tk-scrolled, .t478.tk-scrolled {
+  background: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  padding-top: 6px !important;
+  padding-bottom: 6px !important;
+}
+</style>
+<script>
+(function () {
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  ready(function () {
+var menu = document.querySelector('.t228, .t446, .t451, .t456, .t466, .t478');
+    if (!menu) return;
+    function onScroll() {
+      menu.classList.toggle('tk-scrolled', window.pageYOffset > 100);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  });
+})();
+</script>
+
+<!-- Tilda Kit — Появление при скролле — 2026-07-05 -->
+<style>
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 800ms ease, transform 800ms ease;
+  will-change: opacity, transform;
+}
+.reveal.tk-visible {
+  opacity: 1;
+  transform: none;
+}
+</style>
+<script>
+(function () {
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  ready(function () {
+var items = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(function (el) { el.classList.add('tk-visible'); });
+      return;
+    }
+    var batch = 0;
+    var resetTimer = null;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        setTimeout(function () { el.classList.add('tk-visible'); }, batch * 100);
+        batch++;
+        io.unobserve(el);
+      });
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(function () { batch = 0; }, 100);
+    }, { threshold: 0.15 });
+    items.forEach(function (el) { io.observe(el); });
+  });
+})();
+</script>
+
+<!-- ======== /Tilda Kit snippets ======== -->
+</head>
+<body>
+
+<!-- Tilda-like fixed menu block -->
+<div class="t228" style="position:fixed;top:0;left:0;right:0;z-index:100;padding:24px 40px;background:transparent;display:flex;gap:28px;align-items:center;">
+  <strong>Полигон Tilda Kit</strong>
+  <a href="#about" style="color:inherit;">О нас</a>
+  <a href="#gallery" style="color:inherit;">Галерея</a>
+  <a href="#form" style="color:inherit;">Форма</a>
+</div>
+
+<section class="t-section" style="padding-top:160px;">
+  <a name="top"></a>
+  <h1 class="t-title">Страница-полигон</h1>
+  <p class="t-text" style="max-width:640px;">
+    Это имитация опубликованной страницы Tilda со вставленными сниппетами Tilda Kit.
+    В тексте есть <a href="#form">якорная ссылка на форму</a> — клик по ней прокрутит
+    страницу плавно. А ещё есть <a href="#gallery">ссылка на галерею</a> с анимированным
+    подчёркиванием.
+  </p>
+  <p style="margin-top:28px;">
+    <a href="#form" class="t-btn">Кнопка с эффектом</a>
+  </p>
+</section>
+
+<!-- Tilda Kit — Бегущая строка — 2026-07-05 -->
+<div class="tk-marquee"><div class="tk-marquee__track"><span>TILDA KIT — СВОЙ НАБОР ИНСТРУМЕНТОВ — </span><span>TILDA KIT — СВОЙ НАБОР ИНСТРУМЕНТОВ — </span></div></div>
+<style>
+.tk-marquee {
+  overflow: hidden;
+  background: #ffffff;
+  white-space: nowrap;
+  padding: 10px 0;
+}
+.tk-marquee__track {
+  display: inline-flex;
+  animation: tk-marquee-move linear infinite;
+}
+.tk-marquee__track span {
+  font-size: 48px;
+  color: #1a1a1a;
+  padding-right: 40px;
+}
+@keyframes tk-marquee-move {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.tk-marquee:hover .tk-marquee__track { animation-play-state: paused; }
+</style>
+<script>
+(function () {
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  ready(function () {
+document.querySelectorAll('.tk-marquee').forEach(function (m) {
+      var track = m.querySelector('.tk-marquee__track');
+      if (!track) return;
+      track.style.animationDuration = (track.scrollWidth / 2 / 80) + 's';
+    });
+  });
+})();
+</script>
+
+<section class="t-section">
+  <a name="about"></a>
+  <h2 class="t-title">Блоки с появлением</h2>
+  <div class="cards">
+    <div class="reveal reveal-card"></div>
+    <div class="reveal reveal-card"></div>
+    <div class="reveal reveal-card"></div>
+    <div class="reveal reveal-card"></div>
+  </div>
+</section>
+
+<section class="t-section">
+  <a name="gallery"></a>
+  <h2 class="t-title">Галерея (слайдер)</h2>
+
+  <!-- Tilda Kit — Слайдер-карусель — 2026-07-05 -->
+  <div class="tk-slider" data-autoplay="true" data-interval="4000">
+    <div class="tk-slider__viewport">
+      <div class="tk-slider__track">
+      <div class="tk-slide"><img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=70" alt="Горы на закате"></div>
+      <div class="tk-slide"><img src="https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1200&q=70" alt="Озеро и холмы"></div>
+      <div class="tk-slide"><img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&q=70" alt="Туманный лес"></div>
+      </div>
+    </div>
+    <button class="tk-slider__arrow tk-slider__arrow--prev" aria-label="Назад">‹</button>
+    <button class="tk-slider__arrow tk-slider__arrow--next" aria-label="Вперёд">›</button>
+    <div class="tk-slider__dots"></div>
+  </div>
+  <style>
+  .tk-slider { position: relative; }
+  .tk-slider__viewport {
+    overflow: hidden;
+    border-radius: 12px;
+    height: 440px;
+  }
+  .tk-slider__track {
+    display: flex;
+    height: 100%;
+    transition: transform 500ms ease;
+  }
+  .tk-slide { min-width: 100%; }
+  .tk-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .tk-slider__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 2;
+  }
+  .tk-slider__arrow--prev { left: 16px; }
+  .tk-slider__arrow--next { right: 16px; }
+  .tk-slider__dots {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 14px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    z-index: 2;
+  }
+  .tk-slider__dots button {
+    width: 10px;
+    height: 10px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 0;
+  }
+  .tk-slider__dots button.tk-active { background: #fff; }
+  </style>
+  <script>
+  (function () {
+    function ready(fn) {
+      if (document.readyState !== 'loading') fn();
+      else document.addEventListener('DOMContentLoaded', fn);
+    }
+    ready(function () {
+  document.querySelectorAll('.tk-slider').forEach(function (slider) {
+        var track = slider.querySelector('.tk-slider__track');
+        var slides = slider.querySelectorAll('.tk-slide');
+        var dotsBox = slider.querySelector('.tk-slider__dots');
+        var index = 0;
+        var timer = null;
+
+        function go(i) {
+          index = (i + slides.length) % slides.length;
+          track.style.transform = 'translateX(-' + index * 100 + '%)';
+          if (dotsBox) {
+            dotsBox.querySelectorAll('button').forEach(function (d, di) {
+              d.classList.toggle('tk-active', di === index);
+            });
+          }
+        }
+
+        if (dotsBox) {
+          slides.forEach(function (_, i) {
+            var d = document.createElement('button');
+            d.setAttribute('aria-label', 'Слайд ' + (i + 1));
+            d.addEventListener('click', function () { go(i); });
+            dotsBox.appendChild(d);
+          });
+        }
+
+        var prev = slider.querySelector('.tk-slider__arrow--prev');
+        var next = slider.querySelector('.tk-slider__arrow--next');
+        if (prev) prev.addEventListener('click', function () { go(index - 1); });
+        if (next) next.addEventListener('click', function () { go(index + 1); });
+
+        // Swipe support.
+        var startX = null;
+        slider.addEventListener('pointerdown', function (e) { startX = e.clientX; });
+        slider.addEventListener('pointerup', function (e) {
+          if (startX === null) return;
+          var dx = e.clientX - startX;
+          if (dx > 40) go(index - 1);
+          else if (dx < -40) go(index + 1);
+          startX = null;
+        });
+
+        // Autoplay with pause on hover.
+        if (slider.dataset.autoplay === 'true') {
+          var interval = parseInt(slider.dataset.interval, 10) || 4000;
+          function start() { timer = setInterval(function () { go(index + 1); }, interval); }
+          function stop() { clearInterval(timer); }
+          slider.addEventListener('mouseenter', stop);
+          slider.addEventListener('mouseleave', start);
+          start();
+        }
+
+        go(0);
+      });
+    });
+  })();
+  </script>
+</section>
+
+<section class="t-section" style="min-height:700px;">
+  <a name="form"></a>
+  <h2 class="t-title">Форма</h2>
+  <form onsubmit="return false;">
+    <input class="t-input" placeholder="Имя">
+    <input class="t-input" placeholder="Email">
+    <textarea class="t-input" placeholder="Комментарий" rows="4"></textarea>
+    <button type="submit" class="t-btn t-submit" style="border:0;cursor:pointer;">Отправить</button>
+  </form>
+  <p class="t-descr" style="margin-top:40px;"><a href="#top">Наверх ↑</a></p>
+</section>
+
+</body>
+</html>
