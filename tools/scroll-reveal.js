@@ -1,4 +1,4 @@
-import { header, wrapStyle, wrapScript, targetSelector } from '../js/lib.js';
+import { header, wrapStyle, wrapScript, targetSelectorSingle } from '../js/lib.js';
 
 // Initial transform per effect; cleared by .tk-visible.
 const TRANSFORMS = {
@@ -14,7 +14,7 @@ export default {
   title: 'Появление при скролле',
   category: 'effects',
   description: 'Элементы плавно появляются при попадании в экран: fade, сдвиг, зум. Каскадная задержка для соседей.',
-  insertHint: 'Задай элементам в Zero Block CSS-класс (по умолчанию reveal), вставь код в T123 на этой странице или в HEAD.',
+  insertHint: 'Впиши в поле цели Element ID элемента Zero Block (Settings → Element ID) или ID целого блока (rec123…) — он появится при прокрутке. Код вставь в T123 на этой странице или в HEAD.',
   schema: [
     { key: 'effect', type: 'select', label: 'Эффект', default: 'slide-up', options: [
       { value: 'fade', label: 'Проявление' },
@@ -26,10 +26,10 @@ export default {
     { key: 'distance', type: 'range', label: 'Дистанция, px', min: 20, max: 120, step: 10, default: 40 },
     { key: 'duration', type: 'range', label: 'Длительность, мс', min: 300, max: 1500, step: 100, default: 800 },
     { key: 'delayStep', type: 'range', label: 'Каскад, мс', min: 0, max: 300, step: 50, default: 100 },
-    { key: 'targetClass', type: 'text', label: 'CSS-класс цели', default: 'reveal' },
+    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс', default: 'reveal', placeholder: 'ID Zero-элемента / rec123… / класс' },
   ],
   generate(v) {
-    const sel = targetSelector(v, '.reveal');
+    const sel = targetSelectorSingle(v, '.reveal');
     const transform = (TRANSFORMS[v.effect] || '').replace('{d}', v.distance);
     const css = `${sel} {
   opacity: 0;${transform ? `\n  transform: ${transform};` : ''}
@@ -63,7 +63,9 @@ ${sel}.tk-visible {
     return `${header(this.title)}\n${wrapStyle(css)}\n${wrapScript(js)}`;
   },
   previewHTML(v) {
-    const cls = (v.targetClass || 'reveal').trim().replace(/^\./, '') || 'reveal';
+    // Only class-like input works as a preview card class; IDs get the default.
+    const raw = (v.targetClass || '').trim().replace(/^\./, '');
+    const cls = /^[a-zA-Z][\w-]*$/.test(raw) && !/^rec\d+$/i.test(raw) ? raw : 'reveal';
     const card = `<div class="${cls}" style="height:120px;margin:16px 0;background:#e9e9e6;border-radius:12px;"></div>`;
     return `<div style="height:340px;padding:20px;color:#888;">Прокрути превью вниз ↓</div>
 ${card}${card}${card}${card}`;

@@ -8,13 +8,13 @@ export default {
   title: 'Липкое меню при скролле',
   category: 'tweaks',
   description: 'После прокрутки меню получает фон, тень и (опц.) компактную высоту. Работает со стандартными меню Tilda.',
-  insertHint: 'Вставь код в Настройки сайта → HEAD. Если у тебя нестандартное меню (Zero Block) — укажи его CSS-класс.',
+  insertHint: 'Вставь код в Настройки сайта → HEAD. Если меню не подхватилось автоматически — впиши ID его блока (rec123…, виден в настройках блока меню).',
   schema: [
     { key: 'threshold', type: 'range', label: 'Порог скролла, px', min: 0, max: 600, step: 20, default: 100 },
     { key: 'bg', type: 'color', label: 'Фон после скролла', default: '#ffffff' },
     { key: 'shadow', type: 'toggle', label: 'Тень', default: true },
     { key: 'compact', type: 'toggle', label: 'Компактная высота', default: true },
-    { key: 'targetClass', type: 'text', label: 'CSS-класс меню (опц.)', default: '' },
+    { key: 'targetClass', type: 'text', label: 'Меню: ID или класс (опц.)', default: '', placeholder: 'rec123… блока меню' },
   ],
   generate(v) {
     const sel = targetSelector(v, TILDA_MENUS);

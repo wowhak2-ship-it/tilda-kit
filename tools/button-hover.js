@@ -5,7 +5,7 @@ export default {
   title: 'Эффекты кнопок',
   category: 'effects',
   description: 'Hover-эффекты для кнопок Tilda: заливка, подъём, свечение, стрелка, инверсия.',
-  insertHint: 'Вставь код в блок T123 («HTML-код») или в Настройки сайта → «HTML-код для вставки внутрь HEAD». Для Zero Block задай кнопке CSS-класс (поле CSS Class Name) и укажи его в «CSS-класс цели».',
+  insertHint: 'Вставь код в блок T123 («HTML-код») или в Настройки сайта → HEAD. Для кнопки из Zero Block впиши в поле цели её Element ID (цифры: выдели элемент → Settings → Element ID).',
   schema: [
     { key: 'style', type: 'select', label: 'Стиль', default: 'fill-slide', options: [
       { value: 'fill-slide', label: 'Заливка слева' },
@@ -18,7 +18,7 @@ export default {
     { key: 'textColor', type: 'color', label: 'Текст при наведении', default: '#ffffff' },
     { key: 'duration', type: 'range', label: 'Длительность, мс', min: 100, max: 1000, step: 50, default: 300 },
     { key: 'radius', type: 'range', label: 'Скругление, px', min: 0, max: 50, step: 1, default: 8 },
-    { key: 'targetClass', type: 'text', label: 'CSS-класс цели (опц.)', default: '', placeholder: 'например, my-btn' },
+    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс (опц.)', default: '', placeholder: 'rec123… / ID Zero-элемента' },
   ],
   generate(v) {
     const sel = targetSelector(v, '.t-btn, .t-submit, .t142__submit');

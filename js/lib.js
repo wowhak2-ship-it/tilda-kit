@@ -14,10 +14,31 @@ export function wrapScript(js) {
   return `<script>\n(function () {\n  function ready(fn) {\n    if (document.readyState !== 'loading') fn();\n    else document.addEventListener('DOMContentLoaded', fn);\n  }\n  ready(function () {\n${js.trim()}\n  });\n})();\n<\/script>`;
 }
 
-// Custom target class (if set) or the tool's default Tilda selector.
+// Resolve the user's "target" input into a CSS selector.
+// Tilda has no user-defined classes — only IDs. Accepts:
+//  - recNNN / #recNNN  → Tilda block ID (#rec...)
+//  - digits (6+)       → Zero Block element ID → .tn-elem__<id> (+ atom, img)
+//  - anything else     → treated as a CSS class
+// Empty input falls back to the tool's default Tilda selectors.
 export function targetSelector(values, fallback) {
-  const c = (values.targetClass || '').trim().replace(/^\./, '');
-  return c ? '.' + c : fallback;
+  const raw = (values.targetClass || '').trim();
+  if (!raw) return fallback;
+  if (raw.startsWith('#')) return raw;
+  if (/^rec\d+$/i.test(raw)) return '#' + raw;
+  if (/^\d{6,}$/.test(raw)) {
+    const base = '.tn-elem__' + raw;
+    return `${base}, ${base} .tn-atom, ${base} .tn-atom__img`;
+  }
+  return '.' + raw.replace(/^\./, '');
+}
+
+// Same resolution, but a Zero element ID maps to the element node only.
+// For tools that animate/rewrite whole elements (reveal, counters) —
+// the compound selector would match nested nodes twice.
+export function targetSelectorSingle(values, fallback) {
+  const raw = (values.targetClass || '').trim();
+  if (/^\d{6,}$/.test(raw)) return '.tn-elem__' + raw;
+  return targetSelector(values, fallback);
 }
 
 // Collect default values from a schema.

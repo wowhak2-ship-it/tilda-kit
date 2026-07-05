@@ -1,17 +1,17 @@
-import { header, wrapScript, targetSelector } from '../js/lib.js';
+import { header, wrapScript, targetSelectorSingle } from '../js/lib.js';
 
 export default {
   id: 'counters',
   title: 'Анимация цифр',
   category: 'effects',
   description: 'Числа в тексте «набегают» от нуля при появлении на экране. Работает с текстами стандартных блоков и Zero Block.',
-  insertHint: 'Задай текстовому элементу с числом CSS-класс (по умолчанию counter) — в Zero Block это поле CSS Class Name. Вставь код в T123 или HEAD. Префиксы/суффиксы («+», «%», «м²») сохраняются.',
+  insertHint: 'Впиши в поле цели Element ID текстового элемента Zero Block с числом (Settings → Element ID). Вставь код в T123 или HEAD. Префиксы/суффиксы («+», «%», «м²») сохраняются.',
   schema: [
     { key: 'duration', type: 'range', label: 'Длительность, мс', min: 500, max: 3000, step: 100, default: 1500 },
-    { key: 'targetClass', type: 'text', label: 'CSS-класс цели', default: 'counter' },
+    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс', default: 'counter', placeholder: 'ID Zero-элемента / класс' },
   ],
   generate(v) {
-    const sel = targetSelector(v, '.counter');
+    const sel = targetSelectorSingle(v, '.counter');
     const js = `
     var els = document.querySelectorAll('${sel}');
     function animate(el) {
@@ -50,7 +50,9 @@ export default {
     return `${header(this.title)}\n${wrapScript(js)}`;
   },
   previewHTML(v) {
-    const cls = (v.targetClass || 'counter').trim().replace(/^\./, '') || 'counter';
+    // Only class-like input works as a preview class; IDs get the default.
+    const raw = (v.targetClass || '').trim().replace(/^\./, '');
+    const cls = /^[a-zA-Z][\w-]*$/.test(raw) && !/^rec\d+$/i.test(raw) ? raw : 'counter';
     const item = (num, label) => `<div style="text-align:center;">
   <div class="${cls}" style="font-size:44px;font-weight:bold;">${num}</div>
   <div style="color:#888;font-size:14px;">${label}</div>
