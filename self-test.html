@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Tilda Kit — self-test</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 24px; }
+  table { border-collapse: collapse; }
+  td, th { padding: 4px 10px; border: 1px solid #ddd; font-size: 14px; }
+  .pass { color: #0a7d38; font-weight: bold; }
+  .fail { color: #c0182b; font-weight: bold; }
+</style>
+</head>
+<body>
+<h1>Self-test инструментов</h1>
+<table id="report"><tr><th>Инструмент</th><th>Проверка</th><th>Результат</th></tr></table>
+<script type="module">
+import { tools } from './js/registry.js';
+import { defaults } from './js/lib.js';
+
+const report = document.getElementById('report');
+function row(tool, check, ok, extra = '') {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${tool}</td><td>${check}</td><td class="${ok ? 'pass' : 'fail'}">${ok ? 'PASS' : 'FAIL'} ${extra}</td>`;
+  report.appendChild(tr);
+}
+
+const ids = new Set();
+for (const t of tools) {
+  try {
+    row(t.id, 'уникальный id', !ids.has(t.id));
+    ids.add(t.id);
+    row(t.id, 'обязательные строковые поля', ['id', 'title', 'category', 'description', 'insertHint'].every((k) => typeof t[k] === 'string' && t[k].length > 0));
+    row(t.id, 'категория валидна', ['effects', 'constructors', 'tweaks'].includes(t.category));
+    row(t.id, 'schema валидна', Array.isArray(t.schema) && t.schema.length > 0 && t.schema.every((f) => f.key && f.type && f.label && 'default' in f));
+    const v = defaults(t.schema);
+    const code = t.generate(v);
+    row(t.id, 'generate() → сниппет', typeof code === 'string' && (code.includes('<style') || code.includes('<script')) && code.includes('Tilda Kit'));
+    const html = t.previewHTML(v);
+    row(t.id, 'previewHTML() → разметка', typeof html === 'string' && html.includes('<'));
+  } catch (e) {
+    row(t.id || '?', 'исключение', false, String(e));
+  }
+}
+document.title += report.querySelector('.fail') ? ' — FAIL' : ' — OK';
+</script>
+</body>
+</html>
