@@ -5,7 +5,7 @@ export default {
   title: 'Эффекты картинок',
   category: 'effects',
   description: 'Hover-эффекты для картинок стандартных блоков и Zero Block: зум, затемнение, подъём, ч/б.',
-  insertHint: 'Вставь код в HEAD (действует на картинки галерей и блоков всего сайта). Для отдельной картинки Zero Block впиши в поле цели её Element ID (Settings → Element ID). Зум красивее всего в галереях — там Tilda сама обрезает края.',
+  insertHint: 'Вставь код в HEAD (действует на картинки галерей и блоков всего сайта). Для отдельной картинки Zero Block задай ей класс в поле «CSS-КЛАСС» и впиши его в поле цели. Зум красивее всего в галереях — там Tilda сама обрезает края.',
   schema: [
     { key: 'effect', type: 'select', label: 'Эффект', default: 'zoom', options: [
       { value: 'zoom', label: 'Увеличение' },
@@ -16,7 +16,7 @@ export default {
     { key: 'scale', type: 'range', label: 'Сила зума, %', min: 102, max: 130, step: 2, default: 108 },
     { key: 'duration', type: 'range', label: 'Длительность, мс', min: 200, max: 1200, step: 50, default: 500 },
     { key: 'radius', type: 'range', label: 'Скругление, px', min: 0, max: 32, step: 2, default: 0 },
-    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс (опц.)', default: '', placeholder: 'rec123… / ID Zero-элемента' },
+    { key: 'targetClass', type: 'text', label: 'Цель: класс или ID (опц.)', default: '', placeholder: 'класс из Zero / rec123…' },
   ],
   generate(v) {
     const sel = targetSelector(v, '.t-img, .t-bgimg, .tn-atom__img');

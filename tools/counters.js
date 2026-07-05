@@ -5,10 +5,10 @@ export default {
   title: 'Анимация цифр',
   category: 'effects',
   description: 'Числа в тексте «набегают» от нуля при появлении на экране. Работает с текстами стандартных блоков и Zero Block.',
-  insertHint: 'Впиши в поле цели Element ID текстового элемента Zero Block с числом (Settings → Element ID). Вставь код в T123 или HEAD. Префиксы/суффиксы («+», «%», «м²») сохраняются.',
+  insertHint: 'В Zero Block задай текстовому элементу с числом класс (поле «CSS-КЛАСС», по умолчанию counter). Вставь код в T123 или HEAD. Префиксы/суффиксы («+», «%», «м²») сохраняются.',
   schema: [
     { key: 'duration', type: 'range', label: 'Длительность, мс', min: 500, max: 3000, step: 100, default: 1500 },
-    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс', default: 'counter', placeholder: 'ID Zero-элемента / класс' },
+    { key: 'targetClass', type: 'text', label: 'Цель: класс или ID', default: 'counter', placeholder: 'класс из Zero / rec123…' },
   ],
   generate(v) {
     const sel = targetSelectorSingle(v, '.counter');

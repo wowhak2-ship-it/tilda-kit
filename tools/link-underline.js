@@ -5,7 +5,7 @@ export default {
   title: 'Подчёркивания ссылок',
   category: 'effects',
   description: 'Анимированные подчёркивания текстовых ссылок: выезд, от центра, утолщение, маркер.',
-  insertHint: 'Вставь код в T123 или в HEAD. По умолчанию действует на ссылки в текстовых блоках Tilda; для Zero Block впиши в поле цели Element ID элемента (Settings → Element ID).',
+  insertHint: 'Вставь код в T123 или в HEAD. По умолчанию действует на ссылки в текстовых блоках Tilda; для текста из Zero Block задай элементу класс в поле «CSS-КЛАСС» и впиши его в поле цели.',
   schema: [
     { key: 'style', type: 'select', label: 'Стиль', default: 'slide', options: [
       { value: 'slide', label: 'Выезд слева' },
@@ -16,7 +16,7 @@ export default {
     { key: 'color', type: 'color', label: 'Цвет линии', default: '#1a1a1a' },
     { key: 'thickness', type: 'range', label: 'Толщина, px', min: 1, max: 8, step: 1, default: 2 },
     { key: 'duration', type: 'range', label: 'Длительность, мс', min: 100, max: 800, step: 50, default: 300 },
-    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс (опц.)', default: '', placeholder: 'rec123… / ID Zero-элемента' },
+    { key: 'targetClass', type: 'text', label: 'Цель: класс или ID (опц.)', default: '', placeholder: 'класс из Zero / rec123…' },
   ],
   generate(v) {
     const sel = targetSelector(v, '.t-text a, .t-descr a');

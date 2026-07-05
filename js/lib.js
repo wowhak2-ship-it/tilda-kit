@@ -15,30 +15,35 @@ export function wrapScript(js) {
 }
 
 // Resolve the user's "target" input into a CSS selector.
-// Tilda has no user-defined classes — only IDs. Accepts:
+// Regular Tilda blocks expose only an ID (#rec..., shown in the block panel);
+// elements inside Zero Block can get a custom class via their "CSS-КЛАСС" field.
+// Accepts:
 //  - recNNN / #recNNN  → Tilda block ID (#rec...)
 //  - digits (6+)       → Zero Block element ID → .tn-elem__<id> (+ atom, img)
-//  - anything else     → treated as a CSS class
+//  - anything else     → CSS class; Tilda may put it on the element wrapper,
+//                        so also cover the atom/img inside it
 // Empty input falls back to the tool's default Tilda selectors.
 export function targetSelector(values, fallback) {
   const raw = (values.targetClass || '').trim();
   if (!raw) return fallback;
   if (raw.startsWith('#')) return raw;
   if (/^rec\d+$/i.test(raw)) return '#' + raw;
-  if (/^\d{6,}$/.test(raw)) {
-    const base = '.tn-elem__' + raw;
-    return `${base}, ${base} .tn-atom, ${base} .tn-atom__img`;
-  }
-  return '.' + raw.replace(/^\./, '');
+  let base;
+  if (/^\d{6,}$/.test(raw)) base = '.tn-elem__' + raw;
+  else base = '.' + raw.replace(/^\./, '');
+  return `${base}, ${base} .tn-atom, ${base} .tn-atom__img`;
 }
 
-// Same resolution, but a Zero element ID maps to the element node only.
+// Same resolution, but one selector per target (no atom/img expansion).
 // For tools that animate/rewrite whole elements (reveal, counters) —
 // the compound selector would match nested nodes twice.
 export function targetSelectorSingle(values, fallback) {
   const raw = (values.targetClass || '').trim();
+  if (!raw) return fallback;
+  if (raw.startsWith('#')) return raw;
+  if (/^rec\d+$/i.test(raw)) return '#' + raw;
   if (/^\d{6,}$/.test(raw)) return '.tn-elem__' + raw;
-  return targetSelector(values, fallback);
+  return '.' + raw.replace(/^\./, '');
 }
 
 // Collect default values from a schema.

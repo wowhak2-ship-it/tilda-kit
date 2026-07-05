@@ -13,7 +13,7 @@ export default {
     { key: 'focusColor', type: 'color', label: 'Рамка в фокусе', default: '#1a1a1a' },
     { key: 'radius', type: 'range', label: 'Скругление, px', min: 0, max: 30, step: 1, default: 8 },
     { key: 'height', type: 'range', label: 'Высота поля, px', min: 40, max: 70, step: 2, default: 50 },
-    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс (опц.)', default: '', placeholder: 'rec123… — только одна форма' },
+    { key: 'targetClass', type: 'text', label: 'Цель: класс или ID (опц.)', default: '', placeholder: 'rec123… — только одна форма' },
   ],
   generate(v) {
     const sel = targetSelector(v, '.t-input');

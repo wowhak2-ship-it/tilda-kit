@@ -14,7 +14,7 @@ export default {
   title: 'Появление при скролле',
   category: 'effects',
   description: 'Элементы плавно появляются при попадании в экран: fade, сдвиг, зум. Каскадная задержка для соседей.',
-  insertHint: 'Впиши в поле цели Element ID элемента Zero Block (Settings → Element ID) или ID целого блока (rec123…) — он появится при прокрутке. Код вставь в T123 на этой странице или в HEAD.',
+  insertHint: 'В Zero Block задай элементу класс (поле «CSS-КЛАСС», по умолчанию reveal) — или впиши ID целого блока (#rec…, виден в панели блока). Код вставь в T123 на этой странице или в HEAD.',
   schema: [
     { key: 'effect', type: 'select', label: 'Эффект', default: 'slide-up', options: [
       { value: 'fade', label: 'Проявление' },
@@ -26,7 +26,7 @@ export default {
     { key: 'distance', type: 'range', label: 'Дистанция, px', min: 20, max: 120, step: 10, default: 40 },
     { key: 'duration', type: 'range', label: 'Длительность, мс', min: 300, max: 1500, step: 100, default: 800 },
     { key: 'delayStep', type: 'range', label: 'Каскад, мс', min: 0, max: 300, step: 50, default: 100 },
-    { key: 'targetClass', type: 'text', label: 'Цель: ID или класс', default: 'reveal', placeholder: 'ID Zero-элемента / rec123… / класс' },
+    { key: 'targetClass', type: 'text', label: 'Цель: класс или ID', default: 'reveal', placeholder: 'класс из Zero / rec123…' },
   ],
   generate(v) {
     const sel = targetSelectorSingle(v, '.reveal');
