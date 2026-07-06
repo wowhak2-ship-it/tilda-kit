@@ -17,6 +17,10 @@
 <script type="module">
 import { tools } from './js/registry.js';
 import { defaults } from './js/lib.js';
+import { parseSnippet } from './js/snippet-parser.js';
+
+// Tools whose snippet contains an HTML part (constructors) — they cannot be master-block mods.
+const HTML_TOOLS = ['marquee', 'preloader', 'slider', 'burger-menu'];
 
 const report = document.getElementById('report');
 function row(tool, check, ok, extra = '') {
@@ -38,6 +42,13 @@ for (const t of tools) {
     row(t.id, 'generate() → сниппет', typeof code === 'string' && (code.includes('<style') || code.includes('<script')) && code.includes('Tilda Kit'));
     const html = t.previewHTML(v);
     row(t.id, 'previewHTML() → разметка', typeof html === 'string' && html.includes('<'));
+    const parsed = parseSnippet(code);
+    row(t.id, 'парсер: css/js извлечены',
+      (parsed.css.length > 0) === code.includes('<style') &&
+      (parsed.js.length > 0) === code.includes('<script') &&
+      !parsed.html.includes('<style') && !parsed.html.includes('<script'));
+    row(t.id, 'парсер: html только у конструкторов',
+      HTML_TOOLS.includes(t.id) ? parsed.html.length > 0 : parsed.html === '');
   } catch (e) {
     row(t.id || '?', 'исключение', false, String(e));
   }
