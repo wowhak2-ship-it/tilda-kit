@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Tilda Kit",
+  "version": "1.0.0",
+  "description": "Свой набор инструментов для Tilda: модификаторы стандартных блоков и Zero Block, мастер-блок вместо кучи T123",
+  "action": { "default_title": "Открыть Tilda Kit" },
+  "background": { "service_worker": "background.js" },
+  "permissions": ["storage", "clipboardWrite"],
+  "content_scripts": [
+    {
+      "matches": ["https://tilda.cc/page/*"],
+      "js": ["extension/content.js"],
+      "css": ["extension/content.css"]
+    }
+  ],
+  "sandbox": { "pages": ["preview.html"] },
+  "web_accessible_resources": [
+    {
+      "resources": ["index.html", "preview.html", "css/*", "js/*", "tools/*"],
+      "matches": ["https://tilda.cc/*"]
+    }
+  ]
+}
