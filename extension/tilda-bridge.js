@@ -49,7 +49,10 @@
         if (!ready) return reply(false, 'tilda-api-missing');
         try {
           window.ace.edit(aceEl).setValue(code, -1);
-          window.edrec__sendForm('update', 'content');
+          // 'save' (= «Сохранить и закрыть»), NOT 'update': only 'save' marks the
+          // page as changed, otherwise «Опубликовать» keeps serving the old version
+          // (verified live: 'update' saved the record but publish ignored it).
+          window.edrec__sendForm('save', 'content');
           // Consider it done when the edit panel goes away (or after a grace period).
           waitFor(() => {
             const p = document.getElementById('editformsxl');

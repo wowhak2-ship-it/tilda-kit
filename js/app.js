@@ -204,6 +204,12 @@ let mods = [];
 
 function renderModsList() {
   els.modsList.innerHTML = '';
+  if (!mods.length) {
+    const empty = document.createElement('div');
+    empty.className = 'mods-empty';
+    empty.textContent = 'Пока пусто. Настрой инструмент выше и нажми «+ В мастер-блок».';
+    els.modsList.appendChild(empty);
+  }
   for (const m of mods) {
     const row = document.createElement('div');
     row.className = 'mod';
@@ -241,6 +247,11 @@ els.modAdd.onclick = () => {
 };
 
 els.modsCopy.onclick = async () => {
+  if (!mods.length) {
+    els.modsCopy.textContent = 'Сначала добавь моды';
+    setTimeout(() => { els.modsCopy.textContent = 'Скопировать мастер-блок'; }, 2000);
+    return;
+  }
   try {
     await navigator.clipboard.writeText(buildMasterBlock(mods));
     els.modsCopy.textContent = 'Скопировано ✓';
@@ -262,6 +273,10 @@ if (new URLSearchParams(location.search).get('ctx') === 'tilda') {
   els.writeBtn.classList.remove('hidden');
 
   els.writeBtn.onclick = () => {
+    if (!mods.length) {
+      els.writeStatus.textContent = 'Список пуст: настрой инструмент и нажми «+ В мастер-блок», потом записывай.';
+      return;
+    }
     els.writeBtn.disabled = true;
     els.writeStatus.textContent = 'Записываю…';
     window.parent.postMessage({ type: 'tk-write-master', code: buildMasterBlock(mods) }, '*');
