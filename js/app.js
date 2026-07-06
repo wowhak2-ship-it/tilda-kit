@@ -18,6 +18,8 @@ const els = {
   modAdd: document.getElementById('mod-add'),
   modsCopy: document.getElementById('mods-copy'),
   modsCount: document.getElementById('mods-count'),
+  writeBtn: document.getElementById('write-btn'),
+  writeStatus: document.getElementById('write-status'),
 };
 
 let current = null; // active tool module
@@ -247,6 +249,34 @@ els.modsCopy.onclick = async () => {
   }
   setTimeout(() => { els.modsCopy.textContent = 'Скопировать мастер-блок'; }, 1500);
 };
+
+// --- auto-write into the Tilda editor (extension context only) ---
+const WRITE_ERRORS = {
+  'no-block': 'На странице нет блока T123. Добавь его один раз: Все блоки → Другое → T123 — и нажми ещё раз.',
+  'no-content-button': 'Не нашёл кнопку «Контент» у блока — обнови страницу редактора.',
+  'editor-not-opened': 'Редактор кода не открылся — попробуй ещё раз.',
+  'tilda-api-missing': 'Функции редактора Tilda не найдены (Tilda обновилась?) — используй «Скопировать мастер-блок».',
+};
+
+if (new URLSearchParams(location.search).get('ctx') === 'tilda') {
+  els.writeBtn.classList.remove('hidden');
+
+  els.writeBtn.onclick = () => {
+    els.writeBtn.disabled = true;
+    els.writeStatus.textContent = 'Записываю…';
+    window.parent.postMessage({ type: 'tk-write-master', code: buildMasterBlock(mods) }, '*');
+  };
+
+  window.addEventListener('message', (e) => {
+    if (!e.data || e.data.type !== 'tk-write-result') return;
+    els.writeBtn.disabled = false;
+    if (e.data.ok) {
+      els.writeStatus.textContent = '✓ Записано в блок. Нажми «Опубликовать» в Tilda.';
+    } else {
+      els.writeStatus.textContent = WRITE_ERRORS[e.data.error] || ('Не получилось (' + e.data.error + ') — используй «Скопировать мастер-блок».');
+    }
+  });
+}
 
 // --- init ---
 renderNav();

@@ -133,3 +133,18 @@ body {
 }
 #mod-add { border: 1px solid #1a1a1a; background: #fff; color: #1a1a1a; }
 #mods-copy { border: 0; background: #1a1a1a; color: #fff; }
+.hidden { display: none !important; }
+.write {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #ffb020;
+  color: #1a1a1a;
+  font-weight: bold;
+  font-size: 15px;
+  cursor: pointer;
+}
+.write:disabled { opacity: 0.6; cursor: wait; }
+.write-status { margin-top: 8px; font-size: 13px; color: #555; min-height: 18px; }

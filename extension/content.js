@@ -25,4 +25,16 @@
     document.body.appendChild(frame);
     btn.classList.add('tk-open');
   });
+
+  // Relay: panel iframe -> MAIN-world bridge (write request), bridge -> panel (result).
+  window.addEventListener('message', (e) => {
+    if (!e.data) return;
+    if (frame && e.source === frame.contentWindow && e.data.type === 'tk-write-master') {
+      window.postMessage({ __tk: 'write-master', code: e.data.code }, '*');
+      return;
+    }
+    if (e.source === window && e.data.__tk === 'write-result' && frame) {
+      frame.contentWindow.postMessage({ type: 'tk-write-result', ok: e.data.ok, error: e.data.error }, '*');
+    }
+  });
 })();
