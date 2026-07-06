@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Tilda Kit — полигон мастер-блока</title>
+<!-- Base page look: rough imitation of a published Tilda page. -->
+<style>
+  body { margin: 0; font-family: Arial, Helvetica, sans-serif; color: #1a1a1a; background: #fff; }
+  .t-section { padding: 90px 40px; max-width: 1160px; margin: 0 auto; }
+  .t-title { font-size: 42px; margin: 0 0 24px; }
+  .t-text { font-size: 18px; line-height: 1.7; color: #333; }
+  .t-btn { display: inline-block; padding: 16px 44px; background: #1a1a1a; color: #fff; text-decoration: none; font-size: 16px; }
+  .t-input { width: 100%; max-width: 420px; display: block; margin-bottom: 14px; font-size: 16px; }
+  .t-img { width: 46%; display: inline-block; margin-right: 2%; }
+</style>
+</head>
+<body>
+
+<!-- Tilda-like fixed menu block -->
+<div class="t228" style="position:fixed;top:0;left:0;right:0;z-index:100;padding:24px 40px;background:transparent;display:flex;gap:28px;align-items:center;">
+  <strong>Полигон мастер-блока</strong>
+  <a href="#form" style="color:inherit;">Форма</a>
+</div>
+
+<section class="t-section" style="padding-top:160px;">
+  <h1 class="t-title">Один мастер-блок — все эффекты</h1>
+  <p class="t-text" style="max-width:640px;">
+    На этой странице НЕТ отдельных сниппетов: только один мастер-блок внизу body.
+    Кнопки, картинки, меню и форма стилизуются из его конфига.
+    Ссылка <a href="#form">в этом тексте</a> НЕ анимируется — её мод выключен (enabled: false).
+  </p>
+  <p style="margin-top:28px;">
+    <a href="#form" class="t-btn">Кнопка с эффектом</a>
+  </p>
+</section>
+
+<section class="t-section" id="rec901">
+  <h2 class="t-title">Блок rec901 — ч/б до наведения</h2>
+  <img class="t-img" src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=60" alt="Горы">
+  <img class="t-img" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=60" alt="Лес">
+</section>
+
+<section class="t-section" style="min-height:800px;">
+  <a name="form"></a>
+  <h2 class="t-title">Форма</h2>
+  <form onsubmit="return false;">
+    <input class="t-input" placeholder="Имя">
+    <input class="t-input" placeholder="Email">
+    <button type="submit" class="t-btn t-submit" style="border:0;cursor:pointer;">Отправить</button>
+  </form>
+</section>
+
+<!-- ======== вставленный мастер-блок (сгенерирован панелью) ======== -->
+
+<!-- TILDA KIT MASTER BLOCK — не удалять -->
+<script class="tk-config" type="application/json">
+{
+  "version": 1,
+  "mods": [
+    {
+      "id": "m1demo",
+      "tool": "button-hover",
+      "title": "Эффекты кнопок",
+      "target": "",
+      "enabled": true,
+      "params": {
+        "style": "fill-slide",
+        "color": "#1a1a1a",
+        "textColor": "#ffffff",
+        "duration": 300,
+        "radius": 8,
+        "targetClass": ""
+      },
+      "css": ".t-btn, .t-submit, .t142__submit {\n  position: relative;\n  overflow: hidden;\n  border-radius: 8px;\n  transition: all 300ms ease;\n}\n.t-btn, .t-submit, .t142__submit { z-index: 1; }\n.t-btn::before, .t-submit::before, .t142__submit::before {\n  content: '';\n  position: absolute;\n  inset: 0;\n  background: #1a1a1a;\n  transform: translateX(-101%);\n  transition: transform 300ms ease;\n  z-index: -1;\n}\n.t-btn:hover::before, .t-submit:hover::before, .t142__submit:hover::before { transform: translateX(0); }\n.t-btn:hover, .t-submit:hover, .t142__submit:hover { color: #ffffff !important; }",
+      "js": ""
+    },
+    {
+      "id": "m2demo",
+      "tool": "image-hover",
+      "title": "Эффекты картинок",
+      "target": "rec901",
+      "enabled": true,
+      "params": {
+        "effect": "grayscale",
+        "scale": 108,
+        "duration": 500,
+        "radius": 0,
+        "targetClass": "rec901"
+      },
+      "css": "#rec901 {\n  transition: transform 500ms ease, filter 500ms ease, box-shadow 500ms ease;\n}\n#rec901 { filter: grayscale(1); }\n#rec901:hover { filter: grayscale(0); }",
+      "js": ""
+    },
+    {
+      "id": "m3demo",
+      "tool": "sticky-header",
+      "title": "Липкое меню при скролле",
+      "target": "",
+      "enabled": true,
+      "params": {
+        "threshold": 100,
+        "bg": "#ffffff",
+        "shadow": true,
+        "compact": true,
+        "targetClass": ""
+      },
+      "css": ".t228, .t446, .t451, .t456, .t466, .t478 {\n  transition: all 300ms ease;\n}\n.t228.tk-scrolled, .t446.tk-scrolled, .t451.tk-scrolled, .t456.tk-scrolled, .t466.tk-scrolled, .t478.tk-scrolled {\n  background: #ffffff !important;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;\n  padding-top: 6px !important;\n  padding-bottom: 6px !important;\n}",
+      "js": "(function () {\n  function ready(fn) {\n    if (document.readyState !== 'loading') fn();\n    else document.addEventListener('DOMContentLoaded', fn);\n  }\n  ready(function () {\nvar menu = document.querySelector('.t228, .t446, .t451, .t456, .t466, .t478');\n    if (!menu) return;\n    function onScroll() {\n      menu.classList.toggle('tk-scrolled', window.pageYOffset > 100);\n    }\n    window.addEventListener('scroll', onScroll, { passive: true });\n    onScroll();\n  });\n})();"
+    },
+    {
+      "id": "m4demo",
+      "tool": "form-style",
+      "title": "Стилизация форм",
+      "target": "",
+      "enabled": true,
+      "params": {
+        "bg": "#ffffff",
+        "textColor": "#1a1a1a",
+        "borderColor": "#d0d0d0",
+        "focusColor": "#1a1a1a",
+        "radius": 8,
+        "height": 50,
+        "targetClass": ""
+      },
+      "css": ".t-input {\n  background: #ffffff !important;\n  color: #1a1a1a !important;\n  border: 1px solid #d0d0d0 !important;\n  border-radius: 8px !important;\n  height: 50px !important;\n  padding: 0 16px !important;\n  box-shadow: none !important;\n  transition: border-color 200ms ease;\n}\n.t-input:focus {\n  border-color: #1a1a1a !important;\n  outline: none !important;\n}\n.t-input::placeholder {\n  color: #1a1a1a99;\n}\ntextarea.t-input {\n  height: auto !important;\n  min-height: 100px;\n  padding: 12px 16px !important;\n}",
+      "js": ""
+    },
+    {
+      "id": "m5demo",
+      "tool": "link-underline",
+      "title": "Подчёркивания ссылок",
+      "target": "",
+      "enabled": false,
+      "params": {
+        "style": "slide",
+        "color": "#1a1a1a",
+        "thickness": 2,
+        "duration": 300,
+        "targetClass": ""
+      },
+      "css": ".t-text a, .t-descr a {\n  text-decoration: none;\n  padding-bottom: 2px;\n  background-image: linear-gradient(#1a1a1a, #1a1a1a);\n  background-repeat: no-repeat;\n  background-position: 0 100%;\n  background-size: 0% 2px;\n  transition: background-size 300ms ease;\n}\n.t-text a:hover, .t-descr a:hover {\n  background-size: 100% 2px;\n}",
+      "js": ""
+    }
+  ]
+}
+</script>
+<script>
+(function () {
+  function ready(fn) {
+    if (document.readyState !== 'loading') fn();
+    else document.addEventListener('DOMContentLoaded', fn);
+  }
+  ready(function () {
+    document.querySelectorAll('script.tk-config').forEach(function (cfgEl) {
+      if (cfgEl.dataset.tkDone) return;
+      cfgEl.dataset.tkDone = '1';
+      var cfg;
+      try { cfg = JSON.parse(cfgEl.textContent); } catch (e) { return; }
+      (cfg.mods || []).forEach(function (mod) {
+        if (mod.enabled === false) return;
+        if (mod.css) {
+          var st = document.createElement('style');
+          st.textContent = mod.css;
+          document.head.appendChild(st);
+        }
+        if (mod.js) {
+          var sc = document.createElement('script');
+          sc.textContent = mod.js;
+          document.body.appendChild(sc);
+        }
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

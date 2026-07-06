@@ -25,7 +25,8 @@ export function makeMod(tool, values) {
   const parsed = parseSnippet(tool.generate(values));
   if (parsed.html) return null;
   return {
-    id: 'm' + Date.now().toString(36),
+    // Random suffix: Date.now() alone collides when mods are added in the same ms.
+    id: 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
     tool: tool.id,
     title: tool.title,
     target: (values.targetClass || values.recId || '').trim(),
