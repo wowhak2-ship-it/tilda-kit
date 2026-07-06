@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<style>
+  body { margin: 0; padding: 40px; font-family: Arial, Helvetica, sans-serif; background: #fff; min-height: 100vh; box-sizing: border-box; }
+</style>
+</head>
+<body>
+<script>
+// Sandbox live preview: parent posts { html }, we render it and re-run scripts.
+window.addEventListener('message', function (e) {
+  if (!e.data || typeof e.data.html !== 'string') return;
+  document.body.innerHTML = e.data.html;
+  // innerHTML never executes <script> — recreate each one so it runs.
+  document.body.querySelectorAll('script').forEach(function (old) {
+    var sc = document.createElement('script');
+    sc.textContent = old.textContent;
+    old.replaceWith(sc);
+  });
+  // iframe 'load' already fired; preloader listens for window load — fire a synthetic one.
+  window.dispatchEvent(new Event('load'));
+});
+</script>
+</body>
+</html>

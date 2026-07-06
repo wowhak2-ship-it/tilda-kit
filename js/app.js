@@ -117,19 +117,24 @@ function renderControls() {
 
 function setValue(key, val) { values[key] = val; refresh(); }
 
-// --- debounced preview + code ---
+// --- debounced preview + code (preview.html sandbox, MV3-compatible) ---
 let timer = null;
 function refresh() {
   clearTimeout(timer);
   timer = setTimeout(() => {
     const snippet = current.generate(values);
     els.code.textContent = snippet;
-    els.preview.srcdoc = `<!doctype html><html><head><meta charset="utf-8">
-<style>body{margin:0;padding:40px;font-family:Arial,Helvetica,sans-serif;background:#fff;min-height:100vh;box-sizing:border-box}</style>
-</head><body>
-${current.previewHTML(values)}
-${snippet}
-</body></html>`;
+    const html = `${current.previewHTML(values)}\n${snippet}`;
+    // Recreate the iframe each time: clean window, no leaked listeners/styles.
+    const fresh = document.createElement('iframe');
+    fresh.id = 'preview';
+    fresh.title = 'Превью';
+    fresh.src = 'preview.html';
+    fresh.addEventListener('load', () => {
+      fresh.contentWindow.postMessage({ html }, '*');
+    });
+    els.preview.replaceWith(fresh);
+    els.preview = fresh;
   }, 150);
 }
 
