@@ -1,5 +1,6 @@
 import { tools, categories } from './registry.js';
 import { defaults } from './lib.js';
+import { loadMods, saveMods, makeMod, buildMasterBlock } from './config.js';
 
 const els = {
   nav: document.getElementById('nav'),
@@ -13,6 +14,10 @@ const els = {
   presetName: document.getElementById('preset-name'),
   presetSave: document.getElementById('preset-save'),
   presetList: document.getElementById('preset-list'),
+  modsList: document.getElementById('mods-list'),
+  modAdd: document.getElementById('mod-add'),
+  modsCopy: document.getElementById('mods-copy'),
+  modsCount: document.getElementById('mods-count'),
 };
 
 let current = null; // active tool module
@@ -192,6 +197,58 @@ els.presetSave.onclick = () => {
   renderPresets();
 };
 
+// --- master block mods ---
+let mods = [];
+
+function renderModsList() {
+  els.modsList.innerHTML = '';
+  for (const m of mods) {
+    const row = document.createElement('div');
+    row.className = 'mod';
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = m.enabled;
+    cb.title = 'Вкл/выкл мод';
+    cb.onchange = () => { m.enabled = cb.checked; saveMods(mods); };
+    const label = document.createElement('span');
+    label.className = 'mod-label';
+    label.textContent = `${m.title} → ${m.target || 'все'}`;
+    const del = document.createElement('button');
+    del.textContent = '×';
+    del.title = 'Удалить мод';
+    del.onclick = () => {
+      mods = mods.filter((x) => x.id !== m.id);
+      saveMods(mods);
+      renderModsList();
+    };
+    row.append(cb, label, del);
+    els.modsList.appendChild(row);
+  }
+  els.modsCount.textContent = String(mods.length);
+}
+
+els.modAdd.onclick = () => {
+  const mod = makeMod(current, values);
+  if (!mod) {
+    els.insertHint.textContent = 'Этот инструмент содержит HTML и вставляется отдельным блоком T123 в нужное место страницы — в мастер-блок не добавляется. Используй «Скопировать код».';
+    return;
+  }
+  mods.push(mod);
+  saveMods(mods);
+  renderModsList();
+};
+
+els.modsCopy.onclick = async () => {
+  try {
+    await navigator.clipboard.writeText(buildMasterBlock(mods));
+    els.modsCopy.textContent = 'Скопировано ✓';
+  } catch {
+    els.modsCopy.textContent = 'Ошибка копирования';
+  }
+  setTimeout(() => { els.modsCopy.textContent = 'Скопировать мастер-блок'; }, 1500);
+};
+
 // --- init ---
 renderNav();
 if (tools.length) selectTool(tools[0].id);
+loadMods().then((m) => { mods = m; renderModsList(); });

@@ -103,3 +103,33 @@ body {
   cursor: pointer;
 }
 .copy:hover { background: #ffc247; }
+
+/* --- master block mods --- */
+.mods { margin-top: 20px; border-top: 1px solid #e2e2e0; padding-top: 16px; }
+.mods h2 { display: flex; align-items: center; gap: 8px; }
+.mods-count {
+  background: #ffb020;
+  color: #1a1a1a;
+  border-radius: 10px;
+  padding: 1px 8px;
+  font-size: 12px;
+}
+.mod { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 14px; }
+.mod-label { flex: 1; }
+.mod button {
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 2px 9px;
+}
+.mods-actions { display: flex; gap: 10px; margin-top: 10px; }
+.mods-actions button {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+#mod-add { border: 1px solid #1a1a1a; background: #fff; color: #1a1a1a; }
+#mods-copy { border: 0; background: #1a1a1a; color: #fff; }
