@@ -16,8 +16,14 @@ export default {
     { key: 'targetClass', type: 'text', label: 'Цель: класс или ID (опц.)', default: '', placeholder: 'rec123… — только одна форма' },
   ],
   generate(v) {
-    const sel = targetSelector(v, '.t-input');
+    const sel = targetSelector(v, '.t-input', true);
     const perSel = (s) => sel.split(',').map((x) => x.trim() + s).join(', ');
+    // "textarea" must attach to the last simple selector: "#rec5 .t-input" → "#rec5 textarea.t-input".
+    const textareaSel = sel.split(',').map((x) => {
+      const parts = x.trim().split(/\s+/);
+      parts[parts.length - 1] = 'textarea' + parts[parts.length - 1];
+      return parts.join(' ');
+    }).join(', ');
     const css = `${sel} {
   background: ${v.bg} !important;
   color: ${v.textColor} !important;
@@ -35,7 +41,7 @@ ${perSel(':focus')} {
 ${perSel('::placeholder')} {
   color: ${v.textColor}99;
 }
-${sel.split(',').map((x) => 'textarea' + x.trim()).join(', ')} {
+${textareaSel} {
   height: auto !important;
   min-height: ${v.height * 2}px;
   padding: 12px 16px !important;

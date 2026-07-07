@@ -19,7 +19,7 @@ export default {
     { key: 'targetClass', type: 'text', label: 'Цель: класс или ID (опц.)', default: '', placeholder: 'класс из Zero / rec123…' },
   ],
   generate(v) {
-    const sel = targetSelector(v, '.t-img, .t-bgimg, .tn-atom__img');
+    const sel = targetSelector(v, '.t-img, .t-bgimg, .tn-atom__img', true);
     const perSel = (s) => sel.split(',').map((x) => x.trim() + s).join(', ');
     const scale = (v.scale / 100).toFixed(2);
     let css = `${sel} {

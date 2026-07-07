@@ -18,16 +18,23 @@ export function wrapScript(js) {
 // Regular Tilda blocks expose only an ID (#rec..., shown in the block panel);
 // elements inside Zero Block can get a custom class via their "CSS-КЛАСС" field.
 // Accepts:
-//  - recNNN / #recNNN  → Tilda block ID (#rec...)
+//  - recNNN / #recNNN  → Tilda block ID. With scopeElements (element-level tools:
+//                        buttons, images, links, inputs) the block ID means
+//                        "matching elements INSIDE that block" — the effect must
+//                        hit each object, not the whole block at once.
 //  - digits (6+)       → Zero Block element ID → .tn-elem__<id> (+ atom, img)
 //  - anything else     → CSS class; Tilda may put it on the element wrapper,
 //                        so also cover the atom/img inside it
 // Empty input falls back to the tool's default Tilda selectors.
-export function targetSelector(values, fallback) {
+export function targetSelector(values, fallback, scopeElements = false) {
   const raw = (values.targetClass || '').trim();
   if (!raw) return fallback;
+  const recId = raw.startsWith('#') ? raw.slice(1) : raw;
+  if (/^rec\d+$/i.test(recId)) {
+    if (!scopeElements) return '#' + recId;
+    return fallback.split(',').map((s) => `#${recId} ${s.trim()}`).join(', ');
+  }
   if (raw.startsWith('#')) return raw;
-  if (/^rec\d+$/i.test(raw)) return '#' + raw;
   let base;
   if (/^\d{6,}$/.test(raw)) base = '.tn-elem__' + raw;
   else base = '.' + raw.replace(/^\./, '');

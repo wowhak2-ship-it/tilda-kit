@@ -16,7 +16,7 @@
 <table id="report"><tr><th>Инструмент</th><th>Проверка</th><th>Результат</th></tr></table>
 <script type="module">
 import { tools } from './js/registry.js';
-import { defaults } from './js/lib.js';
+import { defaults, targetSelector, targetSelectorSingle } from './js/lib.js';
 import { parseSnippet } from './js/snippet-parser.js';
 
 // Tools whose snippet contains an HTML part (constructors) — they cannot be master-block mods.
@@ -53,6 +53,20 @@ for (const t of tools) {
     row(t.id || '?', 'исключение', false, String(e));
   }
 }
+// --- lib unit checks: target resolution ---
+row('lib', 'rec + scope → элементы внутри блока',
+  targetSelector({ targetClass: 'rec5' }, '.t-btn, .t-submit', true) === '#rec5 .t-btn, #rec5 .t-submit');
+row('lib', '#rec + scope → элементы внутри блока',
+  targetSelector({ targetClass: '#rec5' }, '.t-img', true) === '#rec5 .t-img');
+row('lib', 'rec без scope → сам блок',
+  targetSelector({ targetClass: 'rec5' }, '.t228', false) === '#rec5');
+row('lib', 'класс из Zero → элемент+атом+img',
+  targetSelector({ targetClass: 'my' }, '.t-btn', true) === '.my, .my .tn-atom, .my .tn-atom__img');
+row('lib', 'пусто → fallback',
+  targetSelector({ targetClass: '' }, '.t-btn, .t-submit', true) === '.t-btn, .t-submit');
+row('lib', 'single: rec → блок целиком',
+  targetSelectorSingle({ targetClass: 'rec5' }, '.reveal') === '#rec5');
+
 document.title += report.querySelector('.fail') ? ' — FAIL' : ' — OK';
 </script>
 </body>

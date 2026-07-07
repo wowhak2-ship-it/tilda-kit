@@ -19,7 +19,7 @@ export default {
     { key: 'targetClass', type: 'text', label: 'Цель: класс или ID (опц.)', default: '', placeholder: 'класс из Zero / rec123…' },
   ],
   generate(v) {
-    const sel = targetSelector(v, '.t-text a, .t-descr a');
+    const sel = targetSelector(v, '.t-text a, .t-descr a', true);
     // Base/hover background-size pairs per style.
     let base = `0% ${v.thickness}px`;
     let hover = `100% ${v.thickness}px`;

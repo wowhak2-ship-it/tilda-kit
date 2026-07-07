@@ -293,7 +293,27 @@ if (new URLSearchParams(location.search).get('ctx') === 'tilda') {
   });
 }
 
+// Rebuild each mod's css/js from its saved params: tool fixes/updates then
+// reach previously saved mods automatically the next time the panel opens.
+function regenerateMods(list) {
+  let changed = false;
+  const fresh = list.map((m) => {
+    const tool = tools.find((t) => t.id === m.tool);
+    if (!tool || !m.params) return m;
+    const rebuilt = makeMod(tool, m.params);
+    if (!rebuilt) return m;
+    if (rebuilt.css !== m.css || rebuilt.js !== m.js || rebuilt.target !== m.target) changed = true;
+    return { ...m, css: rebuilt.css, js: rebuilt.js, target: rebuilt.target };
+  });
+  return { fresh, changed };
+}
+
 // --- init ---
 renderNav();
 if (tools.length) selectTool(tools[0].id);
-loadMods().then((m) => { mods = m; renderModsList(); });
+loadMods().then((m) => {
+  const { fresh, changed } = regenerateMods(m);
+  mods = fresh;
+  if (changed) saveMods(mods);
+  renderModsList();
+});

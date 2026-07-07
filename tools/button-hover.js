@@ -21,7 +21,7 @@ export default {
     { key: 'targetClass', type: 'text', label: 'Цель: класс или ID (опц.)', default: '', placeholder: 'класс из Zero / rec123…' },
   ],
   generate(v) {
-    const sel = targetSelector(v, '.t-btn, .t-submit, .t142__submit');
+    const sel = targetSelector(v, '.t-btn, .t-submit, .t142__submit', true);
     // Apply a pseudo-suffix to every selector in the comma list.
     const perSel = (s) => sel.split(',').map((x) => x.trim() + s).join(', ');
     let css = `${sel} {
