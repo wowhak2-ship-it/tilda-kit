@@ -26,3 +26,28 @@
   box-shadow: -12px 0 32px rgba(0, 0, 0, 0.25);
   background: #fff;
 }
+#tk-pick-overlay {
+  position: fixed;
+  z-index: 2147483646;
+  pointer-events: none;
+  background: rgba(255, 176, 32, 0.22);
+  outline: 2px solid #ffb020;
+  outline-offset: -1px;
+  border-radius: 2px;
+  transition: all 60ms ease;
+}
+#tk-pick-hint {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  padding: 12px 20px;
+  background: #141414;
+  color: #fff;
+  font: 14px/1.3 Arial, sans-serif;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+#tk-pick-hint::before { content: '◎ '; color: #ffb020; }

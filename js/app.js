@@ -25,6 +25,10 @@ const els = {
 let current = null; // active tool module
 let values = {};    // current settings
 
+// Running inside the Tilda editor (as an extension iframe) vs. local server.
+const IS_TILDA_CTX = new URLSearchParams(location.search).get('ctx') === 'tilda';
+let pickTargetKey = null; // schema key awaiting a picker result
+
 // --- navigation ---
 function renderNav() {
   els.nav.innerHTML = '';
@@ -115,6 +119,19 @@ function renderControls() {
         input.placeholder = f.placeholder || '';
         input.oninput = () => setValue(f.key, input.value);
         row.appendChild(input);
+        // In the Tilda editor: pick a target by clicking the object on the page.
+        if (IS_TILDA_CTX && f.key === 'targetClass') {
+          const pick = document.createElement('button');
+          pick.type = 'button';
+          pick.className = 'pick-btn';
+          pick.textContent = '◎';
+          pick.title = 'Выбрать объект на странице';
+          pick.onclick = () => {
+            pickTargetKey = f.key;
+            window.parent.postMessage({ type: 'tk-pick-start' }, '*');
+          };
+          row.appendChild(pick);
+        }
         break;
       }
     }
@@ -269,7 +286,7 @@ const WRITE_ERRORS = {
   'tilda-api-missing': 'Функции редактора Tilda не найдены (Tilda обновилась?) — используй «Скопировать мастер-блок».',
 };
 
-if (new URLSearchParams(location.search).get('ctx') === 'tilda') {
+if (IS_TILDA_CTX) {
   els.writeBtn.classList.remove('hidden');
 
   els.writeBtn.onclick = () => {
@@ -283,12 +300,22 @@ if (new URLSearchParams(location.search).get('ctx') === 'tilda') {
   };
 
   window.addEventListener('message', (e) => {
-    if (!e.data || e.data.type !== 'tk-write-result') return;
-    els.writeBtn.disabled = false;
-    if (e.data.ok) {
-      els.writeStatus.textContent = '✓ Записано в блок. Нажми «Опубликовать» в Tilda.';
-    } else {
-      els.writeStatus.textContent = WRITE_ERRORS[e.data.error] || ('Не получилось (' + e.data.error + ') — используй «Скопировать мастер-блок».');
+    if (!e.data) return;
+    if (e.data.type === 'tk-write-result') {
+      els.writeBtn.disabled = false;
+      if (e.data.ok) {
+        els.writeStatus.textContent = '✓ Записано в блок. Нажми «Опубликовать» в Tilda.';
+      } else {
+        els.writeStatus.textContent = WRITE_ERRORS[e.data.error] || ('Не получилось (' + e.data.error + ') — используй «Скопировать мастер-блок».');
+      }
+      return;
+    }
+    // Picker returned a target — write it into the awaiting field and refresh.
+    if (e.data.type === 'tk-pick-result' && pickTargetKey) {
+      values[pickTargetKey] = e.data.target;
+      renderControls(); // reflects the new value in the input
+      refresh();
+      pickTargetKey = null;
     }
   });
 }
