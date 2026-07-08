@@ -15,7 +15,15 @@ export default {
     const js = `
     var els = document.querySelectorAll('${sel}');
     function animate(el) {
-      var text = el.textContent;
+      // Descend to the element that directly holds the number, so we change only
+      // its text and keep styled wrappers intact. In Zero Block the font-size lives
+      // on the inner .tn-atom; writing into the outer wrapper would drop it and
+      // reset the size.
+      var node = el;
+      while (node.children.length === 1 && node.firstElementChild.textContent.trim() === node.textContent.trim()) {
+        node = node.firstElementChild;
+      }
+      var text = node.textContent;
       var m = text.match(/([\\d\\s]+)/);
       if (!m) return;
       var raw = m[1];
@@ -33,7 +41,7 @@ export default {
         if (start === null) start = ts;
         var t = Math.min(1, (ts - start) / ${v.duration});
         var eased = 1 - Math.pow(1 - t, 3);
-        el.textContent = prefix + fmt(Math.round(target * eased)) + suffix;
+        node.textContent = prefix + fmt(Math.round(target * eased)) + suffix;
         if (t < 1) requestAnimationFrame(stepFrame);
       }
       requestAnimationFrame(stepFrame);

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Counters — Zero Block font-size test</title>
+<style> body { margin: 0; padding: 60px; font-family: Arial, sans-serif; } </style>
+<script class="tk-config" type="application/json">
+{ "version": 2, "mods": [
+  { "id": "c1", "tool": "counters", "target": "123456789", "enabled": true,
+    "params": { "duration": 500, "targetClass": "123456789" } }
+] }
+</script>
+<script type="module" src="/runtime/tk-apply.js"></script>
+</head>
+<body>
+<!-- Mimics Zero Block: wrapper .tn-elem__ID with inner .tn-atom carrying font-size -->
+<div class="tn-elem__123456789">
+  <div class="tn-atom" style="font-size:44px;font-weight:bold;color:#1a1a1a;">1 500</div>
+</div>
+</body>
+</html>
