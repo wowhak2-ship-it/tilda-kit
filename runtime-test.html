@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Tilda Kit — тест внешнего рантайма</title>
+<style>
+  body { margin: 0; font-family: Arial, sans-serif; padding: 40px; }
+  .t-btn { display: inline-block; padding: 16px 40px; background: #1a1a1a; color: #fff; text-decoration: none; }
+  .t-img { width: 200px; height: 140px; object-fit: cover; display: inline-block; }
+</style>
+
+<!-- Slim master block (v2): short config + external runtime, no per-effect code. -->
+<script class="tk-config" type="application/json">
+{
+  "version": 2,
+  "mods": [
+    { "id": "m1", "tool": "button-hover", "target": "", "enabled": true,
+      "params": { "style": "fill-slide", "color": "#1a1a1a", "textColor": "#ffffff", "duration": 300, "radius": 8, "targetClass": "" } },
+    { "id": "m2", "tool": "image-hover", "target": "#rec901", "enabled": true,
+      "params": { "effect": "grayscale", "scale": 108, "duration": 500, "radius": 0, "targetClass": "#rec901" } },
+    { "id": "m3", "tool": "link-underline", "target": "", "enabled": false,
+      "params": { "style": "slide", "color": "#1a1a1a", "thickness": 2, "duration": 300, "targetClass": "" } }
+  ]
+}
+</script>
+<script type="module" src="/runtime/tk-apply.js"></script>
+</head>
+<body>
+<a href="#" class="t-btn">Кнопка</a>
+<section id="rec901" style="margin-top:30px;">
+  <img class="t-img" src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400&q=60" alt="1">
+  <img class="t-img" src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=400&q=60" alt="2">
+</section>
+</body>
+</html>

@@ -37,45 +37,21 @@ export function makeMod(tool, values) {
   };
 }
 
-// Dumb runtime: applies mods from every script.tk-config on the page.
-// It knows nothing about effects — new tools never require updating it.
-export const RUNTIME = `<script>
-(function () {
-  function ready(fn) {
-    if (document.readyState !== 'loading') fn();
-    else document.addEventListener('DOMContentLoaded', fn);
-  }
-  ready(function () {
-    document.querySelectorAll('script.tk-config').forEach(function (cfgEl) {
-      if (cfgEl.dataset.tkDone) return;
-      cfgEl.dataset.tkDone = '1';
-      var cfg;
-      try { cfg = JSON.parse(cfgEl.textContent); } catch (e) { return; }
-      (cfg.mods || []).forEach(function (mod) {
-        if (mod.enabled === false) return;
-        if (mod.css) {
-          var st = document.createElement('style');
-          st.textContent = mod.css;
-          document.head.appendChild(st);
-        }
-        if (mod.js) {
-          var sc = document.createElement('script');
-          sc.textContent = mod.js;
-          document.body.appendChild(sc);
-        }
-      });
-    });
-  });
-})();
-<\/script>`;
+// External runtime hosted on jsDelivr (GitHub). The published site loads it once
+// from the Header; it reads the config and applies every effect. Fix a tool → all
+// sites update. Replace GITHUB_USER after publishing the public tilda-kit repo.
+export const TK_RUNTIME_URL = 'https://cdn.jsdelivr.net/gh/GITHUB_USER/tilda-kit@main/runtime/tk-apply.js';
 
-export function buildMasterBlock(mods) {
-  const cfg = { version: 1, mods };
+// Slim master block: one external <script> + a short config (per mod only the
+// tool id + params). No per-effect code — the runtime generates it from params.
+export function buildMasterBlock(mods, runtimeUrl = TK_RUNTIME_URL) {
+  const slim = mods.map(({ id, tool, target, enabled, params }) => ({ id, tool, target, enabled, params }));
+  const cfg = { version: 2, mods: slim };
   // "</script" inside JSON string values would close the tag in HTML.
   const json = JSON.stringify(cfg, null, 2).replace(/<\/script/g, '<\\/script');
   return `<!-- TILDA KIT MASTER BLOCK — не удалять -->
+<script type="module" src="${runtimeUrl}"></script>
 <script class="tk-config" type="application/json">
 ${json}
-</script>
-${RUNTIME}`;
+</script>`;
 }
