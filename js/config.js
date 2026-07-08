@@ -40,7 +40,7 @@ export function makeMod(tool, values) {
 // External runtime hosted on jsDelivr (GitHub). The published site loads it once
 // from the Header; it reads the config and applies every effect. Fix a tool → all
 // sites update. Replace GITHUB_USER after publishing the public tilda-kit repo.
-export const TK_RUNTIME_URL = 'https://cdn.jsdelivr.net/gh/GITHUB_USER/tilda-kit@main/runtime/tk-apply.js';
+export const TK_RUNTIME_URL = 'https://cdn.jsdelivr.net/gh/wowhak2-ship-it/tilda-kit@main/runtime/tk-apply.js';
 
 // Slim master block: one external <script> + a short config (per mod only the
 // tool id + params). No per-effect code — the runtime generates it from params.
