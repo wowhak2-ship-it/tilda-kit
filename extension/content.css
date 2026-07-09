@@ -1,6 +1,6 @@
 #tk-launcher {
   position: fixed;
-  right: 18px;
+  left: 18px;
   bottom: 18px;
   z-index: 2147483646;
   width: 52px;
@@ -17,13 +17,13 @@
 #tk-panel {
   position: fixed;
   top: 0;
-  right: 0;
+  left: 0;
   width: min(1080px, 96vw);
   height: 100vh;
   z-index: 2147483645;
   border: 0;
-  border-left: 1px solid #ddd;
-  box-shadow: -12px 0 32px rgba(0, 0, 0, 0.25);
+  border-right: 1px solid #ddd;
+  box-shadow: 12px 0 32px rgba(0, 0, 0, 0.25);
   background: #fff;
 }
 #tk-pick-overlay {
