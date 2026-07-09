@@ -102,10 +102,13 @@ export default {
   color: ${v.accent};
 }${sp.css ? '\n' + sp.css : ''}`;
     // Uses window load (not DOMContentLoaded): wait for images/fonts too.
+    // Hide after window load — but if the page already loaded (Tilda runs block
+    // scripts late, so the load event may be gone), hide right away instead of
+    // waiting for an event that will never fire (which left the preloader stuck).
     const js = `<script>
 (function () {
   var t0 = Date.now();
-  window.addEventListener('load', function () {
+  function done() {
     var wait = Math.max(0, ${v.minTime} - (Date.now() - t0));
     setTimeout(function () {
       var p = document.getElementById('tk-preloader');
@@ -114,7 +117,9 @@ export default {
         setTimeout(function () { p.remove(); }, 600);
       }
     }, wait);
-  });
+  }
+  if (document.readyState === 'complete') done();
+  else window.addEventListener('load', done);
 })();
 <\/script>`;
     return `${header(this.title)}\n${html}\n${wrapStyle(css)}\n${js}`;
