@@ -43,7 +43,7 @@ export function makeMod(tool, values) {
 // mutable @main goes stale (fix invisible for days). A version path (@v1) is immutable
 // — new fix = new tag = new URL, браузер всегда берёт свежее, никогда не залипает.
 // Release: git tag v2 tk-public && git push tkpub v2, then bump TK_RUNTIME_VERSION.
-export const TK_RUNTIME_VERSION = 'v1';
+export const TK_RUNTIME_VERSION = 'v2';
 export const TK_RUNTIME_URL = `https://cdn.jsdelivr.net/gh/wowhak2-ship-it/tilda-kit@${TK_RUNTIME_VERSION}/runtime/tk-apply.js`;
 
 // Slim master block: one external <script> + a short config (per mod only the

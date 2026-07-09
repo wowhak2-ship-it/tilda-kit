@@ -4,11 +4,12 @@ export default {
   id: 'button-hover',
   title: 'Эффекты кнопок',
   category: 'effects',
-  description: 'Hover-эффекты для кнопок Tilda: заливка, подъём, свечение, стрелка, инверсия.',
+  description: 'Hover-эффекты для кнопок Tilda: заливка слева/вверх, подъём, свечение, стрелка, инверсия.',
   insertHint: 'Вставь код в блок T123 («HTML-код») или в Настройки сайта → HEAD. Для кнопки из Zero Block: выдели её → поле «CSS-КЛАСС» → задай класс (например my-btn) и впиши его в поле цели. Для обычного блока — его ID (#rec…, виден в панели блока).',
   schema: [
     { key: 'style', type: 'select', label: 'Стиль', default: 'fill-slide', options: [
       { value: 'fill-slide', label: 'Заливка слева' },
+      { value: 'fill-up', label: 'Заливка вверх' },
       { value: 'lift', label: 'Подъём с тенью' },
       { value: 'glow', label: 'Свечение' },
       { value: 'arrow', label: 'Стрелка →' },
@@ -44,6 +45,21 @@ ${perSel('::before')} {
   z-index: -1;
 }
 ${perSel(':hover::before')} { transform: translateX(0); }
+${perSel(':hover')} { color: ${v.textColor} !important; }`;
+        break;
+      case 'fill-up':
+        css += `
+${sel} { z-index: 1; }
+${perSel('::before')} {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: ${v.color};
+  transform: translateY(101%);
+  transition: transform ${v.duration}ms ease;
+  z-index: -1;
+}
+${perSel(':hover::before')} { transform: translateY(0); }
 ${perSel(':hover')} { color: ${v.textColor} !important; }`;
         break;
       case 'lift':
