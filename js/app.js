@@ -163,13 +163,34 @@ function refresh() {
 }
 
 // --- copy to clipboard ---
-els.copyBtn.onclick = async () => {
+// navigator.clipboard can be blocked inside the extension iframe; fall back to
+// the legacy execCommand path, which works within a click gesture.
+async function copyText(text) {
   try {
-    await navigator.clipboard.writeText(current.generate(values));
-    els.copyBtn.textContent = 'Скопировано ✓';
-  } catch {
-    els.copyBtn.textContent = 'Ошибка копирования';
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.top = '0';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      const ok = document.execCommand('copy');
+      ta.remove();
+      return ok;
+    } catch (e2) {
+      return false;
+    }
   }
+}
+
+els.copyBtn.onclick = async () => {
+  const ok = await copyText(current.generate(values));
+  els.copyBtn.textContent = ok ? 'Скопировано ✓' : 'Ошибка копирования';
   setTimeout(() => { els.copyBtn.textContent = 'Скопировать код'; }, 1500);
 };
 
@@ -274,12 +295,8 @@ els.modsCopy.onclick = async () => {
     setTimeout(() => { els.modsCopy.textContent = 'Скопировать мастер-блок'; }, 2000);
     return;
   }
-  try {
-    await navigator.clipboard.writeText(buildMasterBlock(mods));
-    els.modsCopy.textContent = 'Скопировано ✓';
-  } catch {
-    els.modsCopy.textContent = 'Ошибка копирования';
-  }
+  const ok = await copyText(buildMasterBlock(mods));
+  els.modsCopy.textContent = ok ? 'Скопировано ✓' : 'Ошибка копирования';
   setTimeout(() => { els.modsCopy.textContent = 'Скопировать мастер-блок'; }, 1500);
 };
 

@@ -22,6 +22,9 @@
     }
     frame = document.createElement('iframe');
     frame.id = 'tk-panel';
+    // Delegate clipboard access to the cross-origin extension iframe, else
+    // navigator.clipboard.writeText inside the panel is blocked by the host page.
+    frame.allow = 'clipboard-write';
     frame.src = chrome.runtime.getURL('index.html') + '?ctx=tilda&pageid=' + encodeURIComponent(pageid);
     document.body.appendChild(frame);
     btn.classList.add('tk-open');
