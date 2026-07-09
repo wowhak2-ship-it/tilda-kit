@@ -15,6 +15,7 @@ const els = {
   presetSave: document.getElementById('preset-save'),
   presetList: document.getElementById('preset-list'),
   modsList: document.getElementById('mods-list'),
+  modAdd: document.getElementById('mod-add'),
   modsCopy: document.getElementById('mods-copy'),
   modsCount: document.getElementById('mods-count'),
   writeBtn: document.getElementById('write-btn'),
@@ -27,7 +28,6 @@ let values = {};    // current settings
 // Running inside the Tilda editor (as an extension iframe) vs. local server.
 const IS_TILDA_CTX = new URLSearchParams(location.search).get('ctx') === 'tilda';
 let pickTargetKey = null; // schema key awaiting a picker result
-let activeModId = null;   // mod currently being edited via the panel (auto-add)
 
 // --- navigation ---
 function renderNav() {
@@ -53,7 +53,6 @@ function renderNav() {
 function selectTool(id) {
   current = tools.find((t) => t.id === id);
   values = defaults(current.schema);
-  activeModId = null; // start a fresh mod for this tool on the next interaction
   document.querySelectorAll('.nav-item').forEach((b) =>
     b.classList.toggle('active', b.dataset.id === id));
   els.toolTitle.textContent = current.title;
@@ -140,7 +139,7 @@ function renderControls() {
   }
 }
 
-function setValue(key, val) { values[key] = val; upsertActiveMod(); refresh(); }
+function setValue(key, val) { values[key] = val; refresh(); }
 
 // --- debounced preview + code (preview.html sandbox, MV3-compatible) ---
 let timer = null;
@@ -225,7 +224,7 @@ function renderModsList() {
   if (!mods.length) {
     const empty = document.createElement('div');
     empty.className = 'mods-empty';
-    empty.textContent = 'Пусто. Выбери инструмент, кликни объект на странице (◎) или подвигай настройки — эффект добавится сюда сам.';
+    empty.textContent = 'Пусто. Настрой эффект и кликни объект пикером (◎) или нажми «+ Добавить в мастер-блок».';
     els.modsList.appendChild(empty);
   }
   for (const m of mods) {
@@ -253,30 +252,21 @@ function renderModsList() {
   els.modsCount.textContent = String(mods.length);
 }
 
-// Auto-add: keep the current tool+settings live in the master block, no button.
-// A pick starts a fresh mod; tweaking settings updates the same (active) mod.
-// De-dup by tool+target so re-picking the same object edits it instead of cloning.
-function upsertActiveMod({ freshTarget = false } = {}) {
-  const cand = makeMod(current, values);
-  if (!cand) return; // constructors (HTML) can't live in the master block
-  if (freshTarget) activeModId = null;
-
-  let mod = activeModId && mods.find((m) => m.id === activeModId);
-  if (!mod) mod = mods.find((m) => m.tool === cand.tool && m.target === cand.target);
-
-  if (mod) {
-    mod.target = cand.target;
-    mod.params = cand.params;
-    mod.css = cand.css;
-    mod.js = cand.js;
-    activeModId = mod.id;
-  } else {
-    mods.push(cand);
-    activeModId = cand.id;
+// Add the current tool+settings as a NEW mod. Triggered explicitly by the user
+// (picking an element, or the "Добавить" button) — never on plain settings edits.
+// Each call appends a separate mod; nothing is overwritten.
+function addMod() {
+  const mod = makeMod(current, values);
+  if (!mod) {
+    els.insertHint.textContent = 'Этот инструмент вставляется отдельным блоком T123 в нужное место страницы — в мастер-блок не добавляется. Используй «Скопировать код».';
+    return;
   }
+  mods.push(mod);
   saveMods(mods);
   renderModsList();
 }
+
+els.modAdd.onclick = addMod;
 
 els.modsCopy.onclick = async () => {
   if (!mods.length) {
@@ -320,16 +310,21 @@ if (IS_TILDA_CTX) {
       els.writeBtn.disabled = false;
       if (e.data.ok) {
         els.writeStatus.textContent = '✓ Записано в блок. Нажми «Опубликовать» в Tilda.';
+        // Clear the target field so the next effect starts fresh.
+        if ('targetClass' in values) values.targetClass = '';
+        if ('recId' in values) values.recId = '';
+        renderControls();
+        refresh();
       } else {
         els.writeStatus.textContent = WRITE_ERRORS[e.data.error] || ('Не получилось (' + e.data.error + ') — используй «Скопировать мастер-блок».');
       }
       return;
     }
-    // Picker returned a target — fill the field, auto-add the effect as a new mod.
+    // Picker returned a target — fill the field and add the effect as a new mod.
     if (e.data.type === 'tk-pick-result' && pickTargetKey) {
       values[pickTargetKey] = e.data.target;
       renderControls(); // reflects the new value in the input
-      upsertActiveMod({ freshTarget: true });
+      addMod();
       refresh();
       pickTargetKey = null;
     }
