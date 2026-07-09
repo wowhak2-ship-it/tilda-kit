@@ -53,13 +53,14 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .claude/serve.ps1 -Port 8600
 
 ```html
 <!-- TILDA KIT MASTER BLOCK — не удалять -->
-<script type="module" src="https://cdn.jsdelivr.net/gh/wowhak2-ship-it/tilda-kit@main/runtime/tk-apply.js"></script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/wowhak2-ship-it/tilda-kit@v1/runtime/tk-apply.js"></script>
 <script class="tk-config" type="application/json">{ "version":2, "mods":[ … ] }</script>
 ```
 
-Плюс: починил инструмент → `git subtree push` в публичный репозиторий → обновилось
-на **всех сайтах сразу** (jsDelivr кэширует ветку ~до 12 часов; для мгновенного
-обновления чистится через purge.jsdelivr.net). Блок почти не растёт от числа эффектов.
+Адрес рантайма пиннится на **версионный тег** (`@v1`), а не на `@main`: jsDelivr и
+браузеры кэшируют файлы 7 дней, поэтому изменяемый `@main` «залипает» — фикс не виден
+неделю. Версия `@v1` immutable; новый фикс = новый тег `@v2` = новый адрес → браузер
+всегда берёт свежее. Блок почти не растёт от числа эффектов.
 
 Рантайм переиспользует те же `tools/*.js`, что и панель, — нулевое дублирование кода.
 Старые блоки (со вшитым кодом, version 1) тоже работают — рантайм понимает оба формата.
@@ -67,12 +68,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .claude/serve.ps1 -Port 8600
 ### Публичный репозиторий рантайма
 
 Файлы рантайма живут в отдельном публичном репо `wowhak2-ship-it/tilda-kit`
-(только код инструмента, без клиентских проектов). Обновить после правок:
+(только код инструмента, без клиентских проектов). Выпустить новую версию после правок:
 
 ```powershell
 git branch -D tk-public; git subtree split --prefix=tilda-kit -b tk-public
 git push tkpub tk-public:main --force
+git tag -f v2 tk-public; git push tkpub v2   # новый тег: v2, v3, …
 ```
+
+Затем поднять `TK_RUNTIME_VERSION` в `js/config.js` до нового тега. Существующие блоки
+на сайтах — перезаписать (панель пишет актуальную версию) или заменить `@vX`→`@vN`
+в T123 вручную и опубликовать.
 
 Как пользоваться:
 1. Настроил инструмент → кнопка **«+ В мастер-блок»** (список модов справа внизу).
