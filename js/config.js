@@ -38,9 +38,13 @@ export function makeMod(tool, values) {
 }
 
 // External runtime hosted on jsDelivr (GitHub). The published site loads it once
-// from the Header; it reads the config and applies every effect. Fix a tool → all
-// sites update. Replace GITHUB_USER after publishing the public tilda-kit repo.
-export const TK_RUNTIME_URL = 'https://cdn.jsdelivr.net/gh/wowhak2-ship-it/tilda-kit@main/runtime/tk-apply.js';
+// from the Header; it reads the config and applies every effect.
+// Pinned to a version TAG (not @main): jsDelivr + browsers cache files 7 days, so a
+// mutable @main goes stale (fix invisible for days). A version path (@v1) is immutable
+// — new fix = new tag = new URL, браузер всегда берёт свежее, никогда не залипает.
+// Release: git tag v2 tk-public && git push tkpub v2, then bump TK_RUNTIME_VERSION.
+export const TK_RUNTIME_VERSION = 'v1';
+export const TK_RUNTIME_URL = `https://cdn.jsdelivr.net/gh/wowhak2-ship-it/tilda-kit@${TK_RUNTIME_VERSION}/runtime/tk-apply.js`;
 
 // Slim master block: one external <script> + a short config (per mod only the
 // tool id + params). No per-effect code — the runtime generates it from params.
