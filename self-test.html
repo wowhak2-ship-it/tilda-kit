@@ -20,7 +20,8 @@ import { defaults, targetSelector, targetSelectorSingle } from './js/lib.js';
 import { parseSnippet } from './js/snippet-parser.js';
 
 // Tools whose snippet contains an HTML part (constructors) — they cannot be master-block mods.
-const HTML_TOOLS = ['marquee', 'preloader', 'slider', 'burger-menu'];
+// slider is a modifier now: it converts an existing block, no HTML part.
+const HTML_TOOLS = ['marquee', 'preloader', 'burger-menu'];
 
 const report = document.getElementById('report');
 function row(tool, check, ok, extra = '') {

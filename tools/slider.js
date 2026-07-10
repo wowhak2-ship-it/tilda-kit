@@ -1,19 +1,13 @@
-import { header, wrapStyle, wrapScript } from '../js/lib.js';
-
-// Placeholder images the user replaces with their own.
-const SLIDES = [
-  { src: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=70', alt: 'Горы на закате' },
-  { src: 'https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=1200&q=70', alt: 'Озеро и холмы' },
-  { src: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1200&q=70', alt: 'Туманный лес' },
-];
+import { header, wrapStyle, wrapScript, targetSelectorSingle } from '../js/lib.js';
 
 export default {
   id: 'slider',
   title: 'Слайдер-карусель',
   category: 'constructors',
-  description: 'Карусель картинок/карточек: стрелки, точки, автопрокрутка, свайп. Картинки заменяешь на свои в коде.',
-  insertHint: 'Вставь код в блок T123. Внутри кода — три <div class="tk-slide"> с картинками-заглушками: замени URL на свои.',
+  description: 'Превращает выбранный блок в карусель из его собственных картинок: стандартная галерея Tilda или Zero Block. Стрелки, точки, свайп, автопрокрутка.',
+  insertHint: 'Кликни пикером ◎ блок галереи или Zero Block с картинками (2+) — карусель соберётся из его фото. Цель обязательна. Код — в мастер-блок (⚡) или в HEAD.',
   schema: [
+    { key: 'targetClass', type: 'text', label: 'Цель: класс или ID', default: '', placeholder: 'кликни блок пикером ◎' },
     { key: 'height', type: 'range', label: 'Высота, px', min: 260, max: 720, step: 20, default: 440 },
     { key: 'arrows', type: 'toggle', label: 'Стрелки', default: true },
     { key: 'dots', type: 'toggle', label: 'Точки', default: true },
@@ -22,18 +16,7 @@ export default {
     { key: 'radius', type: 'range', label: 'Скругление, px', min: 0, max: 32, step: 2, default: 12 },
   ],
   generate(v) {
-    const slides = SLIDES.map((s) => `    <div class="tk-slide"><img src="${s.src}" alt="${s.alt}"></div>`).join('\n');
-    const arrows = v.arrows
-      ? `\n  <button class="tk-slider__arrow tk-slider__arrow--prev" aria-label="Назад">‹</button>\n  <button class="tk-slider__arrow tk-slider__arrow--next" aria-label="Вперёд">›</button>`
-      : '';
-    const dots = v.dots ? `\n  <div class="tk-slider__dots"></div>` : '';
-    const html = `<div class="tk-slider" data-autoplay="${v.autoplay}" data-interval="${v.interval}">
-  <div class="tk-slider__viewport">
-    <div class="tk-slider__track">
-${slides}
-    </div>
-  </div>${arrows}${dots}
-</div>`;
+    const sel = targetSelectorSingle(v, '');
     const css = `.tk-slider { position: relative; }
 .tk-slider__viewport {
   overflow: hidden;
@@ -45,13 +28,19 @@ ${slides}
   height: 100%;
   transition: transform 500ms ease;
 }
-.tk-slide { min-width: 100%; }
-.tk-slide img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
+.tk-slide { min-width: 100%; height: 100%; }
+/* Reset moved tiles/elements so they fill their slide (Zero elems are absolute). */
+.tk-slide > * {
+  position: static !important;
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  left: auto !important;
+  top: auto !important;
 }
+.tk-slide .t-bgimg { background-size: cover; background-position: center; }
+.tk-slide .tn-atom { width: 100% !important; height: 100% !important; }
+.tk-slide img { width: 100% !important; height: 100% !important; object-fit: cover; display: block; }
 .tk-slider__arrow {
   position: absolute;
   top: 50%;
@@ -88,64 +77,104 @@ ${slides}
   padding: 0;
 }
 .tk-slider__dots button.tk-active { background: #fff; }`;
+    // Without a target there is nothing to convert — CSS-only inert snippet
+    // (the preview and insertHint tell the user to pick a block).
+    if (!sel) {
+      return `${header(this.title)}\n${wrapStyle(css)}`;
+    }
     const js = `
-    document.querySelectorAll('.tk-slider').forEach(function (slider) {
-      var track = slider.querySelector('.tk-slider__track');
-      var slides = slider.querySelectorAll('.tk-slide');
-      var dotsBox = slider.querySelector('.tk-slider__dots');
-      var index = 0;
-      var timer = null;
+    var root = document.querySelector('${sel}');
+    if (!root || root.dataset.tkSlider) return;
+    // Collect slides from the block's own content:
+    // standard gallery tiles → Zero Block image elements → plain images.
+    var slides = [].slice.call(root.querySelectorAll('.t-bgimg'));
+    if (slides.length < 2) slides = [].slice.call(root.querySelectorAll('.tn-elem[data-elem-type="image"]'));
+    if (slides.length < 2) slides = [].slice.call(root.querySelectorAll('img'));
+    if (slides.length < 2) return;
+    root.dataset.tkSlider = '1';
 
-      function go(i) {
-        index = (i + slides.length) % slides.length;
-        track.style.transform = 'translateX(-' + index * 100 + '%)';
-        if (dotsBox) {
-          dotsBox.querySelectorAll('button').forEach(function (d, di) {
-            d.classList.toggle('tk-active', di === index);
-          });
-        }
-      }
+    var slider = document.createElement('div');
+    slider.className = 'tk-slider';
+    slider.innerHTML = '<div class="tk-slider__viewport"><div class="tk-slider__track"></div></div>'
+      ${v.arrows ? `+ '<button class="tk-slider__arrow tk-slider__arrow--prev" aria-label="Назад">‹</button><button class="tk-slider__arrow tk-slider__arrow--next" aria-label="Вперёд">›</button>'` : ''}
+      ${v.dots ? `+ '<div class="tk-slider__dots"></div>'` : ''};
+    var track = slider.querySelector('.tk-slider__track');
 
+    // Build the carousel where the first slide used to be, then MOVE the
+    // original nodes into it (no copies — Tilda lazyload keeps working).
+    slides[0].parentNode.insertBefore(slider, slides[0]);
+    slides.forEach(function (s) {
+      var w = document.createElement('div');
+      w.className = 'tk-slide';
+      w.appendChild(s);
+      track.appendChild(w);
+    });
+
+    var dotsBox = slider.querySelector('.tk-slider__dots');
+    var index = 0;
+    var timer = null;
+
+    function go(i) {
+      index = (i + slides.length) % slides.length;
+      track.style.transform = 'translateX(-' + index * 100 + '%)';
       if (dotsBox) {
-        slides.forEach(function (_, i) {
-          var d = document.createElement('button');
-          d.setAttribute('aria-label', 'Слайд ' + (i + 1));
-          d.addEventListener('click', function () { go(i); });
-          dotsBox.appendChild(d);
+        dotsBox.querySelectorAll('button').forEach(function (d, di) {
+          d.classList.toggle('tk-active', di === index);
         });
       }
+    }
 
-      var prev = slider.querySelector('.tk-slider__arrow--prev');
-      var next = slider.querySelector('.tk-slider__arrow--next');
-      if (prev) prev.addEventListener('click', function () { go(index - 1); });
-      if (next) next.addEventListener('click', function () { go(index + 1); });
-
-      // Swipe support.
-      var startX = null;
-      slider.addEventListener('pointerdown', function (e) { startX = e.clientX; });
-      slider.addEventListener('pointerup', function (e) {
-        if (startX === null) return;
-        var dx = e.clientX - startX;
-        if (dx > 40) go(index - 1);
-        else if (dx < -40) go(index + 1);
-        startX = null;
+    if (dotsBox) {
+      slides.forEach(function (_, i) {
+        var d = document.createElement('button');
+        d.setAttribute('aria-label', 'Слайд ' + (i + 1));
+        d.addEventListener('click', function () { go(i); });
+        dotsBox.appendChild(d);
       });
+    }
 
-      // Autoplay with pause on hover.
-      if (slider.dataset.autoplay === 'true') {
-        var interval = parseInt(slider.dataset.interval, 10) || 4000;
-        function start() { timer = setInterval(function () { go(index + 1); }, interval); }
-        function stop() { clearInterval(timer); }
-        slider.addEventListener('mouseenter', stop);
-        slider.addEventListener('mouseleave', start);
-        start();
-      }
+    var prev = slider.querySelector('.tk-slider__arrow--prev');
+    var next = slider.querySelector('.tk-slider__arrow--next');
+    if (prev) prev.addEventListener('click', function (e) { e.preventDefault(); go(index - 1); });
+    if (next) next.addEventListener('click', function (e) { e.preventDefault(); go(index + 1); });
 
-      go(0);
-    });`;
-    return `${header(this.title)}\n${html}\n${wrapStyle(css)}\n${wrapScript(js)}`;
+    // Swipe support.
+    var startX = null;
+    slider.addEventListener('pointerdown', function (e) { startX = e.clientX; });
+    slider.addEventListener('pointerup', function (e) {
+      if (startX === null) return;
+      var dx = e.clientX - startX;
+      if (dx > 40) go(index - 1);
+      else if (dx < -40) go(index + 1);
+      startX = null;
+    });
+${v.autoplay ? `
+    // Autoplay with pause on hover.
+    var interval = ${v.interval};
+    function start() { timer = setInterval(function () { go(index + 1); }, interval); }
+    function stop() { clearInterval(timer); }
+    slider.addEventListener('mouseenter', stop);
+    slider.addEventListener('mouseleave', start);
+    start();
+` : ''}
+    go(0);`;
+    return `${header(this.title)}\n${wrapStyle(css)}\n${wrapScript(js)}`;
   },
-  previewHTML() {
-    return `<div style="color:#999;font-size:13px;margin-bottom:12px;">Слайдер ниже — сгенерированный блок:</div>`;
+  previewHTML(v) {
+    // Mirror the user's target on the preview container so the snippet applies live.
+    const raw = (v.targetClass || '').trim();
+    let attr = '';
+    const rec = raw.replace(/^#/, '');
+    if (/^rec\d+$/i.test(rec)) attr = ` id="${rec}"`;
+    else if (raw && /^[a-zA-Z][\w-]*$/.test(raw.replace(/^\./, ''))) attr = ` class="${raw.replace(/^\./, '')}"`;
+    const tile = (img) => `<div class="t-bgimg" style="height:200px;background-image:url('https://images.unsplash.com/${img}?w=600&q=60');background-size:cover;background-position:center;"></div>`;
+    const note = attr
+      ? ''
+      : `<p style="color:#999;font-size:13px;margin:0 0 12px;">Это «галерея-сетка». Впиши цель (или кликни блок пикером ◎) — и она станет каруселью.</p>`;
+    return `${note}<div${attr} style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+${tile('photo-1501785888041-af3ef285b470')}
+${tile('photo-1470071459604-3b5ec3a7fe05')}
+${tile('photo-1493246507139-91e8fad9978e')}
+</div>`;
   },
 };
