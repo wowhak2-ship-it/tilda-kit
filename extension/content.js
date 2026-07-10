@@ -12,12 +12,29 @@
   btn.title = 'Tilda Kit';
   document.body.appendChild(btn);
 
+  // Single <style> mirroring the panel's current tool onto the editor page,
+  // so changes (radius, colors, hovers) are visible in the editor in real time.
+  function setLiveCss(css) {
+    let st = document.getElementById('tk-live-preview');
+    if (!css) {
+      if (st) st.remove();
+      return;
+    }
+    if (!st) {
+      st = document.createElement('style');
+      st.id = 'tk-live-preview';
+      document.head.appendChild(st);
+    }
+    st.textContent = css;
+  }
+
   let frame = null;
   btn.addEventListener('click', () => {
     if (frame) {
       frame.remove();
       frame = null;
       btn.classList.remove('tk-open');
+      setLiveCss(''); // panel closed → drop the live preview styles
       return;
     }
     frame = document.createElement('iframe');
@@ -129,6 +146,10 @@
       }
       if (e.data.type === 'tk-pick-start') {
         startPick();
+        return;
+      }
+      if (e.data.type === 'tk-live-css') {
+        setLiveCss(e.data.css || '');
         return;
       }
     }

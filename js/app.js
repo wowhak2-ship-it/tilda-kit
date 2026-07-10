@@ -1,6 +1,7 @@
 import { tools, categories } from './registry.js';
 import { defaults } from './lib.js';
 import { loadMods, saveMods, makeMod, buildMasterBlock } from './config.js';
+import { parseSnippet } from './snippet-parser.js';
 
 const els = {
   nav: document.getElementById('nav'),
@@ -148,6 +149,11 @@ function refresh() {
   timer = setTimeout(() => {
     const snippet = current.generate(values);
     els.code.textContent = snippet;
+    // Live preview in the Tilda editor: mirror the current tool's CSS onto the
+    // editor page itself (CSS only — JS effects would mutate the editor DOM).
+    if (IS_TILDA_CTX) {
+      window.parent.postMessage({ type: 'tk-live-css', css: parseSnippet(snippet).css || '' }, '*');
+    }
     const html = `${current.previewHTML(values)}\n${snippet}`;
     // Recreate the iframe each time: clean window, no leaked listeners/styles.
     const fresh = document.createElement('iframe');

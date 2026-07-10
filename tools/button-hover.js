@@ -25,10 +25,12 @@ export default {
     const sel = targetSelector(v, '.t-btn, .t-submit, .t142__submit', true);
     // Apply a pseudo-suffix to every selector in the comma list.
     const perSel = (s) => sel.split(',').map((x) => x.trim() + s).join(', ');
+    // !important on radius: Tilda's flex buttons carry .t-btn.t-btnflex rules
+    // with higher specificity that would override a plain .t-btn selector.
     let css = `${sel} {
   position: relative;
   overflow: hidden;
-  border-radius: ${v.radius}px;
+  border-radius: ${v.radius}px !important;
   transition: all ${v.duration}ms ease;
 }`;
     switch (v.style) {
