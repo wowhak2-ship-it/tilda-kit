@@ -14,6 +14,7 @@ import sectionSpacing from '../tools/section-spacing.js';
 import counters from '../tools/counters.js';
 import customCursor from '../tools/custom-cursor.js';
 import nbspFix from '../tools/nbsp-fix.js';
+import autoscale from '../tools/autoscale.js';
 
 export const categories = [
   { id: 'effects', title: 'Эффекты' },
@@ -21,4 +22,4 @@ export const categories = [
   { id: 'tweaks', title: 'Твики' },
 ];
 
-export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader, marquee, preloader, slider, burgerMenu, imageHover, tabsStyle, sectionSpacing, counters, customCursor, nbspFix];
+export const tools = [buttonHover, linkUnderline, smoothScroll, scrollReveal, formStyle, stickyHeader, marquee, preloader, slider, burgerMenu, imageHover, tabsStyle, sectionSpacing, counters, customCursor, nbspFix, autoscale];
